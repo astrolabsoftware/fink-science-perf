@@ -22,7 +22,8 @@ import argparse
 from codecarbon import EmissionsTracker
 import pandas as pd
 
-from fink_science.xmatch.processor import cdsxmatch
+from fink_utils.spark.utils import concat_col
+from fink_science.fast_transient_rate.processor import magnitude_rate
 
 from ztf.log_format import apply_logger_conf
 
@@ -45,16 +46,25 @@ if __name__ == "__main__":
 
     df = spark.read.format('parquet').load(args.datafolder)
 
-    cols = ['candidate.candid', 'candidate.ra', 'candidate.dec']
+    # Required alert columns, concatenated with historical data
+    what = ['magpsf', 'sigmapsf', 'jd', 'fid', 'diffmaglim']
+
+    prefix = 'c'
+    what_prefix = [prefix + i for i in what]
+    for colname in what:
+        df = concat_col(df, colname, prefix=prefix)
+
+    cols = ['candidate.magpsf', 'candidate.sigmapsf', 'candidate.jd', 'candidate.jdstarthist', 'candidate.fid']
+    cols += [F.col(i) for i in what_prefix]
+
     pdf = df.select(cols).toPandas()
 
     with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
         t0 = time.time()
-        out = cdsxmatch.__wrapped__(
+        out = magnitude_rate.__wrapped__(
             *[pdf[col] for col in pdf.columns], 
-            pd.Series(["1"]), 
-            pd.Series(["simbad"]), 
-            pd.Series(["main_type"])
+            pd.Series([10000,]), 
+            pd.Series([2023]), 
         )
 
         # Raw throughput (single core)
