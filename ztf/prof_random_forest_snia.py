@@ -37,7 +37,7 @@ if __name__ == "__main__":
     args = parser.parse_args(None)
 
     spark = SparkSession.builder.master("local[*]").getOrCreate()
-    spark.sparkContext.setLogLevel("WARN")
+    spark.sparkContext.setLogLevel("ERROR")
 
     df = spark.read.format('parquet').load(args.datafolder)
 
