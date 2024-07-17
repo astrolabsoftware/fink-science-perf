@@ -136,10 +136,8 @@ with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
 and run the code with:
 
 ```bash
-#!/bin/bash
-
-kernprof -l profile_code.py
-python -m line_profiler profile_code.py.lprof
+# Change arguments accordingly
+./run_benchmark.sh -f ztf/prof_random_forest_snia.py -d /data/ftransfer_ztf_2024-07-16_682277
 ```
 
 Dependending on how many decorators you put in the code,
