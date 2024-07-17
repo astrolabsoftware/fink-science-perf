@@ -20,6 +20,7 @@ import time
 import logging
 import argparse
 from codecarbon import EmissionsTracker
+import pandas as pd
 
 from fink_utils.spark.utils import concat_col
 from fink_science.xmatch.processor import cdsxmatch
