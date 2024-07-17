@@ -23,7 +23,6 @@ from codecarbon import EmissionsTracker
 
 from fink_utils.spark.utils import concat_col
 from fink_science.kilonova.processor import knscore
-from fink_science.ad_features.processor import extract_features_ad
 
 from ztf.log_format import apply_logger_conf
 
