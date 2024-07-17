@@ -22,7 +22,7 @@ import argparse
 from codecarbon import EmissionsTracker
 import pandas as pd
 
-from fink_science.xmatch.processor import cdsxmatch
+from fink_science.xmatch.processor import cdsxmatch, crossmatch_other_catalog
 
 from ztf.log_format import apply_logger_conf
 
@@ -52,11 +52,35 @@ if __name__ == "__main__":
         t0 = time.time()
         out = cdsxmatch.__wrapped__(
             *[pdf[col] for col in pdf.columns], 
-            pd.Series(["1"]), 
+            pd.Series([1]), 
             pd.Series(["simbad"]), 
             pd.Series(["main_type"])
         )
 
         # Raw throughput (single core)
         _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
+
+    with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
+        t0 = time.time()
+        out = cdsxmatch.__wrapped__(
+            *[pdf[col] for col in pdf.columns],
+            pd.Series(["1"]),
+            pd.Series(["vizier:I/355/gaiadr3"]),
+            pd.Series(["DR3Name,Plx,e_Plx"])
+        )
+
+        # Raw throughput (single core)
+        _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
+
+    with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
+        t0 = time.time()
+        out = crossmatch_other_catalog.__wrapped__(
+            *[pdf[col] for col in pdf.columns],
+            pd.Series(["vsx"]),
+            pd.Series([1.5]),
+        )
+
+        # Raw throughput (single core)
+        _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
+
 
