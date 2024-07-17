@@ -25,9 +25,13 @@ from fink_utils.spark.utils import concat_col
 from fink_science.anomaly_detection.processor import anomaly_score
 from fink_science.ad_features.processor import extract_features_ad
 
+from ztf.log_format import apply_logger_conf
+
 _LOG = logging.getLogger(__name__)
 
 if __name__ == "__main__":
+    apply_logger_conf("INFO")
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "-datafolder",
