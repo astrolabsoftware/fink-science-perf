@@ -24,9 +24,13 @@ from codecarbon import EmissionsTracker
 from fink_utils.spark.utils import concat_col
 from fink_science.microlensing.processor import mulens
 
+from ztf.log_format import apply_logger_conf
+
 _LOG = logging.getLogger(__name__)
 
 if __name__ == "__main__":
+    apply_logger_conf("INFO")
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "-datafolder",

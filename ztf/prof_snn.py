@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Profile Early SN Ia for ZTF"""
+"""Profile SNN Ia for ZTF"""
 import pyspark.sql.functions as F
 from pyspark.sql import SparkSession
 
@@ -27,6 +27,7 @@ from fink_science.snn.processor import snn_ia
 _LOG = logging.getLogger(__name__)
 
 if __name__ == "__main__":
+    apply_logger_conf("INFO")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "-datafolder",
