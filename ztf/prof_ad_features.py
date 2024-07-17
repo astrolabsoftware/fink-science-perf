@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
         t0 = time.time()
-        out = extract_features_ad.__wrapped__(*cols)
+        out = extract_features_ad.__wrapped__(*[pdf[col] for col in pdf.columns])
 
         # Raw throughput (single core)
         _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
