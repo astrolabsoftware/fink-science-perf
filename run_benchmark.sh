@@ -27,4 +27,4 @@ fi
 
 
 kernprof -l $FILENAME -d $DATAFOLDER
-python -m line_profiler $FILENAME.lprof
+python -m line_profiler $(basename ${FILENAME}).lprof
