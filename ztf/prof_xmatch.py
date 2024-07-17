@@ -48,8 +48,8 @@ if __name__ == "__main__":
     cols = ['candidate.candid', 'candidate.ra', 'candidate.dec']
     pdf = df.select(cols).toPandas()
 
+    _LOG.info("###### SIMBAD ######")
     with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
-        _LOG.info("###### SIMBAD ######")
         t0 = time.time()
         out = cdsxmatch.__wrapped__(
             *[pdf[col] for col in pdf.columns], 
@@ -61,8 +61,8 @@ if __name__ == "__main__":
         # Raw throughput (single core)
         _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
 
+    _LOG.info("###### GAIA DR3 ######")
     with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
-        _LOG.info("###### GAIA DR3 ######")
         t0 = time.time()
         out = cdsxmatch.__wrapped__(
             *[pdf[col] for col in pdf.columns],
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         # Raw throughput (single core)
         _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
 
+    _LOG.info("###### VSX ######")
     with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
-        _LOG.info("###### VSX ######")
         t0 = time.time()
         out = cdsxmatch.__wrapped__(
             *[pdf[col] for col in pdf.columns],
@@ -87,8 +87,8 @@ if __name__ == "__main__":
         # Raw throughput (single core)
         _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
 
+    _LOG.info("###### SPICY ######")
     with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
-        _LOG.info("###### SPICY ######")
         t0 = time.time()
         out = cdsxmatch.__wrapped__(
             *[pdf[col] for col in pdf.columns],
@@ -100,8 +100,8 @@ if __name__ == "__main__":
         # Raw throughput (single core)
         _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
 
+    _LOG.info("###### MANGROVE ######")
     with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
-        _LOG.info("###### MANGROVE ######")
         t0 = time.time()
         out = crossmatch_mangrove.__wrapped__(
             *[pdf[col] for col in pdf.columns],
@@ -112,8 +112,8 @@ if __name__ == "__main__":
         _LOG.info("Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0)))
 
     for radius, catalog in zip([1.5, 60.0, 60.0], ["gcvs", "3hsp", "4lac"]):
+        _LOG.info("###### {} ######".format(catalog.upper()))
         with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
-            _LOG.info("###### {} ######".format(catalog.upper()))
             t0 = time.time()
             out = crossmatch_other_catalog.__wrapped__(
                 *[pdf[col] for col in pdf.columns],
