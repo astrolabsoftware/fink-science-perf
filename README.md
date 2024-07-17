@@ -79,69 +79,22 @@ from line_profiler import profile
 def the_function_that_needs_to_be_profiled(...)
 ```
 
-and finally add a new script to test the module:
+and install the code:
 
-```python
-import time
-from codecarbon import EmissionsTracker
-
-from pyspark.sql import SparkSession
-import pyspark.sql.functions as F
-
-from fink_utils.spark.utils import concat_col
-from fink_science.hostless_detection.processor import run_potential_hostless
-
-# Spark is only used to pre-process data
-spark = SparkSession.builder.master("local[*]").getOrCreate()
-spark.sparkContext.setLogLevel("WARN")
-
-# Change the path accordingly
-df = spark.read.format('parquet').load('/data/ftransfer_ztf_2024-07-16_682277')
-
-# Required for this module
-df = concat_col(df, 'magpsf', prefix='c')
-
-# Cast data into a Pandas DataFrame
-# Limit to 1000 is not necessary
-pdf = df.limit(1000).select(
-    [
-        "cmagpsf", 
-        F.col("cutoutScience.stampData").alias("cutoutScience"), 
-        F.col("cutoutTemplate.stampData").alias("cutoutTemplate"), 
-        "objectId"
-    ]
-).toPandas()
-
-# Change accordingly the PUE
-with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
-    t0 = time.time()
-
-    # call the processor without the Spark decorator
-    out = run_potential_hostless.__wrapped__(
-        pdf["cmagpsf"], 
-        pdf["cutoutScience"], 
-        pdf["cutoutTemplate"], 
-        pdf["objectId"]
-    )
-
-    # Raw throughput (single core)
-    print("{:.2f} alert/second".format(len(pdf) / (time.time() - t0)))
-
-    # In this case, a negative probability means the 
-    # code did not run fully (quality cuts). So we 
-    # want to know the proportion of alerts fully classified (effective throughput)
-    print("{:.0f}% objects with p > 0".format(len(out[out > 0]) / len(out) * 100))
+```bash
+# in fink-science
+pip install .
 ```
 
-and run the code with:
+and finally in `/path/to/fink-science-perf`, add a new script `prof_YOUR_MODULE_NAME.py` to test the module (see e.g. scripts in [ztf/](ztf/)) and profile your code with:
 
 ```bash
 # Change arguments accordingly
-./run_benchmark.sh -f ztf/prof_random_forest_snia.py -d /data/ftransfer_ztf_2024-07-16_682277
+./run_benchmark.sh -f ztf/prof_YOUR_MODULE_NAME.py -d /data/$TOPIC
 ```
 
 Dependending on how many decorators you put in the code,
-you will see a more or less details in the form:
+you will see a more or less details in the form. For example:
 
 ```python
 File: /home/libs/fink-science/fink_science/hostless_detection/run_pipeline.py
