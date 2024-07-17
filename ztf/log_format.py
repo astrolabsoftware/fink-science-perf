@@ -28,6 +28,6 @@ def apply_logger_conf(level: str) -> None:
         raise ValueError("Invalid log level: {level}")
     logging.basicConfig(
         level=numeric_level,
-        format="%(asctime)s %(levelname)s:%(message)s",
-        datefmt="%m/%d/%Y %I:%M:%S %p",
+        format="[profiling %(levelname)s @ %(asctime)s %(levelname)s] %(message)s",
+        datefmt="%I:%M:%S",
     )
