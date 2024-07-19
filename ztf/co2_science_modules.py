@@ -209,7 +209,7 @@ def save_on_disk(modules, total_memory, gb_per_executor, core_per_executor, nigh
     for k_ in ['throughput', 'co2']:
         modules_ = {k: modules[k][k_] for k in modules.keys()}
 
-        nloops = len(list(modules.values())[0]['result'])
+        nloops = len(list(modules.values())[0]['throughput'])
         conf_line = "total_memory={}, gb_per_executor={}, core_per_executor={}, night={}, total_alerts={}".format(
             total_memory, gb_per_executor, core_per_executor, night, total_alerts
         )
