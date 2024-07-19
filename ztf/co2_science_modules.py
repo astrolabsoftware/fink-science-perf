@@ -48,58 +48,58 @@ _LOG = logging.getLogger(__name__)
 def load_configuration() -> dict:
     """Configuration with all science modules."""
     modules = {
-        'CDS xmatch (SIMBAD)': {
-            'processor': cdsxmatch,
-            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("simbad"), F.lit("main_type")],
-            'type': 'xmatch',
-            'colname': 'cdsxmatch'
-        },
-        'CDS xmatch (vizier)': {
-            'processor': cdsxmatch,
-            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("vizier:I/355/gaiadr3"), F.lit("DR3Name,Plx,e_Plx")],
-            'type': 'xmatch',
-            'colname': 'gaia'
-        },
-        'Local xmatch': {
-            'processor': crossmatch_other_catalog,
-            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit("gcvs"), F.lit(1.5).alias("radius")],
-            'type': 'xmatch',
-            'colname': 'gcvs'
-        },
-        'Kilonova': {
-            'processor': knscore,
-            'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', F.col('candidate.jdstarthist'), F.col('cdsxmatch'), F.col('candidate.ndethist')],
-            'type': 'ml',
-            'colname': 'rf_kn_vs_nonkn'
-        },
-        # 'Anomaly': {
-        #     'processor': anomaly_score,
-        #     'cols': ["lc_features"]
+        # 'CDS xmatch (SIMBAD)': {
+        #     'processor': cdsxmatch,
+        #     'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("simbad"), F.lit("main_type")],
+        #     'type': 'xmatch',
+        #     'colname': 'cdsxmatch'
         # },
-        'Fast transient': {
-            'processor': magnitude_rate,
-            'cols': ['candidate.magpsf', 'candidate.sigmapsf', 'candidate.jd', 'candidate.jdstarthist', 'candidate.fid', 'cmagpsf', 'csigmapsf', 'cjd', 'cfid', 'cdiffmaglim', F.lit(1000).alias("N"), F.lit(None).alias("seed")],
-            'type': 'feature',
-            'colname': 'fast_transient'
-        },
-        'Feature extraction': {
-            'processor': extract_features_ad,
-            'cols': ['cmagpsf', 'cjd', 'csigmapsf', 'cfid', 'objectId', 'cdistnr', 'cmagnr', 'csigmagnr', 'cisdiffpos'],
-            'type': 'feature',
-            'colname': 'lc_features'
-        },
-        'Microlensing': {
-            'processor': mulens,
-            'cols': ['cfid', 'cmagpsf', 'csigmapsf', 'cmagnr', 'csigmagnr', 'cisdiffpos', 'candidate.ndethist'],
-            'type': 'ml',
-            'colname': 'mulens'
-        },
-        'Asteroid': {
-            'processor': roid_catcher,
-            'cols': ['cjd', 'cmagpsf', 'candidate.ndethist', 'candidate.sgscore1', 'candidate.ssdistnr', 'candidate.distpsnr1'],
-            'type': 'feature',
-            'colname': 'roid'
-        },
+        # 'CDS xmatch (vizier)': {
+        #     'processor': cdsxmatch,
+        #     'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("vizier:I/355/gaiadr3"), F.lit("DR3Name,Plx,e_Plx")],
+        #     'type': 'xmatch',
+        #     'colname': 'gaia'
+        # },
+        # 'Local xmatch': {
+        #     'processor': crossmatch_other_catalog,
+        #     'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit("gcvs"), F.lit(1.5).alias("radius")],
+        #     'type': 'xmatch',
+        #     'colname': 'gcvs'
+        # },
+        # 'Kilonova': {
+        #     'processor': knscore,
+        #     'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', F.col('candidate.jdstarthist'), F.col('cdsxmatch'), F.col('candidate.ndethist')],
+        #     'type': 'ml',
+        #     'colname': 'rf_kn_vs_nonkn'
+        # },
+        # # 'Anomaly': {
+        # #     'processor': anomaly_score,
+        # #     'cols': ["lc_features"]
+        # # },
+        # 'Fast transient': {
+        #     'processor': magnitude_rate,
+        #     'cols': ['candidate.magpsf', 'candidate.sigmapsf', 'candidate.jd', 'candidate.jdstarthist', 'candidate.fid', 'cmagpsf', 'csigmapsf', 'cjd', 'cfid', 'cdiffmaglim', F.lit(1000).alias("N"), F.lit(None).alias("seed")],
+        #     'type': 'feature',
+        #     'colname': 'fast_transient'
+        # },
+        # 'Feature extraction': {
+        #     'processor': extract_features_ad,
+        #     'cols': ['cmagpsf', 'cjd', 'csigmapsf', 'cfid', 'objectId', 'cdistnr', 'cmagnr', 'csigmagnr', 'cisdiffpos'],
+        #     'type': 'feature',
+        #     'colname': 'lc_features'
+        # },
+        # 'Microlensing': {
+        #     'processor': mulens,
+        #     'cols': ['cfid', 'cmagpsf', 'csigmapsf', 'cmagnr', 'csigmagnr', 'cisdiffpos', 'candidate.ndethist'],
+        #     'type': 'ml',
+        #     'colname': 'mulens'
+        # },
+        # 'Asteroid': {
+        #     'processor': roid_catcher,
+        #     'cols': ['cjd', 'cmagpsf', 'candidate.ndethist', 'candidate.sgscore1', 'candidate.ssdistnr', 'candidate.distpsnr1'],
+        #     'type': 'feature',
+        #     'colname': 'roid'
+        # },
         'SuperNNova': {
             'processor': snn_ia,
             'cols': ['candid', 'cjd', 'cfid', 'cmagpsf', 'csigmapsf', 'roid', 'cdsxmatch', 'candidate.jdstarthist', F.lit('snn_snia_vs_nonia')],
@@ -140,8 +140,8 @@ def plot_histogram(modules, kind='ztf'):
     # assuming run with the same GB/core to get the average
     plt.bar(
         modules.keys(),
-        [np.mean(val["result"]) for val in modules.values()],
-        yerr=[np.std(val["result"]) for val in modules.values()],
+        [np.mean(val["throughput"]) for val in modules.values()],
+        yerr=[np.std(val["throughput"]) for val in modules.values()],
         color=colors, edgecolor=colors, ecolor='black',
         linewidth=3, error_kw={'capsize': 10},
         alpha=0.3, fill=True
@@ -168,22 +168,55 @@ def plot_histogram(modules, kind='ztf'):
     plt.xticks(rotation=90)
     plt.ylim(10, None)
     plt.tight_layout()
-    plt.savefig('perf_fink_science_{}.png'.format(__version__))
+    plt.savefig('perf_fink_science_{}_pandas.png'.format(__version__))
+    plt.show()
+
+def plot_histogram_co2(modules, kind='ztf'):
+    """ """
+    fig = plt.figure(figsize=(12, 10))
+    ax = fig.add_subplot(111)
+
+    colors = ['C{}'.format(i) for i in range(len(modules))]
+
+    # 8h per day, 365 day
+    coeff = 8 * 3600 * 365
+
+    # assuming run with the same GB/core to get the average
+    plt.bar(
+        modules.keys(),
+        [np.mean(val["co2"]) * coeff for val in modules.values()],
+        yerr=[np.std(val["co2"]) * coeff for val in modules.values()],
+        color=colors, edgecolor=colors, ecolor='black',
+        linewidth=3, error_kw={'capsize': 10},
+        alpha=0.3, fill=True
+    )
+    plt.grid(alpha=0.5)
+
+    plt.ylabel('CO₂eq (kg/year)')
+
+    plt.title('Emissions as CO₂-equivalents (version {})'.format(__version__))
+
+    plt.yscale('log')
+    plt.xticks(rotation=90)
+    plt.ylim(10, None)
+    plt.tight_layout()
+    plt.savefig('co2_fink_science_{}_pandas.png'.format(__version__))
     plt.show()
 
 def save_on_disk(modules, total_memory, gb_per_executor, core_per_executor, night, total_alerts):
     """ """
-    modules_ = {k: modules[k]['result'] for k in modules.keys()}
+    for k_ in ['throughput', 'co2']:
+        modules_ = {k: modules[k][k_] for k in modules.keys()}
 
-    nloops = len(list(modules.values())[0]['result'])
-    conf_line = "total_memory={}, gb_per_executor={}, core_per_executor={}, night={}, total_alerts={}".format(
-        total_memory, gb_per_executor, core_per_executor, night, total_alerts
-    )
+        nloops = len(list(modules.values())[0]['result'])
+        conf_line = "total_memory={}, gb_per_executor={}, core_per_executor={}, night={}, total_alerts={}".format(
+            total_memory, gb_per_executor, core_per_executor, night, total_alerts
+        )
 
-    modules_['config'] = [conf_line] * nloops
+        modules_['config'] = [conf_line] * nloops
 
-    pdf = pd.DataFrame(modules_)
-    pdf.to_parquet('perf_science_modules_{}.parquet'.format(__version__), index=False)
+        pdf = pd.DataFrame(modules_)
+        pdf.to_parquet('perf_science_modules_{}_{}_pandas.parquet'.format(k_, __version__), index=False)
 
 def load_spark_session(n_cpu, gb_per_cpu):
     """
@@ -269,6 +302,7 @@ if __name__ == "__main__":
     for module_name, module_prop in modules.items():
         _LOG.info(module_name)
         throughput = []
+        co2 = []
         for n_cpu, gb_per_cpu in zip(n_cpus, gb_per_cpus):
 
             spark = load_spark_session(n_cpu=n_cpu, gb_per_cpu=gb_per_cpu)
@@ -282,41 +316,34 @@ if __name__ == "__main__":
 
             df = concat(df)
 
-            df = df.select(module_prop["cols"]).repartition(numPartitions=int(n_cpu))
+            pdf = df.select(module_prop["cols"]).toPandas()
 
-            # Cache to reduce I/O perturbations
-            # Make sure you have enough memory
-            df = df.cache()
+            with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
+                t0 = time.time()
+                out = module_prop["processor"].__wrapped__(*[pdf[col] for col in pdf.columns])
 
-            total_alerts = df.count()
+                # Raw throughput (single core)
+                throughput.append(len(pdf) / (time.time() - t0))
+                co2.append(tracker.final_emissions_data.values['emissions_rate'])
 
-            _LOG.info('Number of alerts: {:,}'.format(total_alerts))
-
-            # TODO: define a condition for each module to
-            # know how many alerts are really processed
-
-            t0 = time.time()
-            pdf = df.withColumn(
-                'tmp',
-                module_prop["processor"](*df.columns)
-            ).select('tmp').toPandas()
-            t_lapse = time.time() - t0
-            throughput.append(total_alerts/t_lapse/n_cpu)
             spark.stop()
 
-        modules[module_name]["result"] = throughput
+        modules[module_name]["throughput"] = throughput
+        modules[module_name]["co2"] = co2
 
     # plot
     plot_histogram(modules, kind='ztf')
 
+    plot_histogram_co2(modules, kind='ztf')
+
     # save parquet
     save_on_disk(
-        modules,
-        args.total_memory,
-        args.gb_per_executor,
-        args.core_per_executor,
-        args.night,
-        total_alerts
+       modules,
+       args.total_memory,
+       args.gb_per_executor,
+       args.core_per_executor,
+       args.night,
+       total_alerts
     )
 
 
