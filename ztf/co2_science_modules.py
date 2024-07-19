@@ -49,58 +49,58 @@ _LOG = logging.getLogger(__name__)
 def load_configuration() -> dict:
     """Configuration with all science modules."""
     modules = {
-        # 'CDS xmatch (SIMBAD)': {
-        #     'processor': cdsxmatch,
-        #     'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("simbad"), F.lit("main_type")],
-        #     'type': 'xmatch',
-        #     'colname': 'cdsxmatch'
+        'CDS xmatch (SIMBAD)': {
+            'processor': cdsxmatch,
+            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("simbad"), F.lit("main_type")],
+            'type': 'xmatch',
+            'colname': 'cdsxmatch'
+        },
+        'CDS xmatch (vizier)': {
+            'processor': cdsxmatch,
+            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("vizier:I/355/gaiadr3"), F.lit("DR3Name,Plx,e_Plx")],
+            'type': 'xmatch',
+            'colname': 'gaia'
+        },
+        'Local xmatch': {
+            'processor': crossmatch_other_catalog,
+            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit("gcvs"), F.lit(1.5).alias("radius")],
+            'type': 'xmatch',
+            'colname': 'gcvs'
+        },
+        'Kilonova': {
+            'processor': knscore,
+            'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', F.col('candidate.jdstarthist'), F.col('cdsxmatch'), F.col('candidate.ndethist')],
+            'type': 'ml',
+            'colname': 'rf_kn_vs_nonkn'
+        },
+        # 'Anomaly': {
+        #     'processor': anomaly_score,
+        #     'cols': ["lc_features"]
         # },
-        # 'CDS xmatch (vizier)': {
-        #     'processor': cdsxmatch,
-        #     'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("vizier:I/355/gaiadr3"), F.lit("DR3Name,Plx,e_Plx")],
-        #     'type': 'xmatch',
-        #     'colname': 'gaia'
-        # },
-        # 'Local xmatch': {
-        #     'processor': crossmatch_other_catalog,
-        #     'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit("gcvs"), F.lit(1.5).alias("radius")],
-        #     'type': 'xmatch',
-        #     'colname': 'gcvs'
-        # },
-        # 'Kilonova': {
-        #     'processor': knscore,
-        #     'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', F.col('candidate.jdstarthist'), F.col('cdsxmatch'), F.col('candidate.ndethist')],
-        #     'type': 'ml',
-        #     'colname': 'rf_kn_vs_nonkn'
-        # },
-        # # 'Anomaly': {
-        # #     'processor': anomaly_score,
-        # #     'cols': ["lc_features"]
-        # # },
-        # 'Fast transient': {
-        #     'processor': magnitude_rate,
-        #     'cols': ['candidate.magpsf', 'candidate.sigmapsf', 'candidate.jd', 'candidate.jdstarthist', 'candidate.fid', 'cmagpsf', 'csigmapsf', 'cjd', 'cfid', 'cdiffmaglim', F.lit(1000).alias("N"), F.lit(None).alias("seed")],
-        #     'type': 'feature',
-        #     'colname': 'fast_transient'
-        # },
-        # 'Feature extraction': {
-        #     'processor': extract_features_ad,
-        #     'cols': ['cmagpsf', 'cjd', 'csigmapsf', 'cfid', 'objectId', 'cdistnr', 'cmagnr', 'csigmagnr', 'cisdiffpos'],
-        #     'type': 'feature',
-        #     'colname': 'lc_features'
-        # },
-        # 'Microlensing': {
-        #     'processor': mulens,
-        #     'cols': ['cfid', 'cmagpsf', 'csigmapsf', 'cmagnr', 'csigmagnr', 'cisdiffpos', 'candidate.ndethist'],
-        #     'type': 'ml',
-        #     'colname': 'mulens'
-        # },
-        # 'Asteroid': {
-        #     'processor': roid_catcher,
-        #     'cols': ['cjd', 'cmagpsf', 'candidate.ndethist', 'candidate.sgscore1', 'candidate.ssdistnr', 'candidate.distpsnr1'],
-        #     'type': 'feature',
-        #     'colname': 'roid'
-        # },
+        'Fast transient': {
+            'processor': magnitude_rate,
+            'cols': ['candidate.magpsf', 'candidate.sigmapsf', 'candidate.jd', 'candidate.jdstarthist', 'candidate.fid', 'cmagpsf', 'csigmapsf', 'cjd', 'cfid', 'cdiffmaglim', F.lit(1000).alias("N"), F.lit(None).alias("seed")],
+            'type': 'feature',
+            'colname': 'fast_transient'
+        },
+        'Feature extraction': {
+            'processor': extract_features_ad,
+            'cols': ['cmagpsf', 'cjd', 'csigmapsf', 'cfid', 'objectId', 'cdistnr', 'cmagnr', 'csigmagnr', 'cisdiffpos'],
+            'type': 'feature',
+            'colname': 'lc_features'
+        },
+        'Microlensing': {
+            'processor': mulens,
+            'cols': ['cfid', 'cmagpsf', 'csigmapsf', 'cmagnr', 'csigmagnr', 'cisdiffpos', 'candidate.ndethist'],
+            'type': 'ml',
+            'colname': 'mulens'
+        },
+        'Asteroid': {
+            'processor': roid_catcher,
+            'cols': ['cjd', 'cmagpsf', 'candidate.ndethist', 'candidate.sgscore1', 'candidate.ssdistnr', 'candidate.distpsnr1'],
+            'type': 'feature',
+            'colname': 'roid'
+        },
         'SuperNNova': {
             'processor': snn_ia,
             'cols': ['candid', 'cjd', 'cfid', 'cmagpsf', 'csigmapsf', 'roid', 'cdsxmatch', 'candidate.jdstarthist', F.lit('snn_snia_vs_nonia')],
