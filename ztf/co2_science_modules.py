@@ -197,9 +197,8 @@ def plot_histogram_co2(modules, kind='ztf'):
 
     plt.title('Emissions as CO₂-equivalents (version {})'.format(__version__))
 
-    plt.yscale('log')
     plt.xticks(rotation=90)
-    #plt.ylim(10, None)
+    plt.ylim(0, None)
     plt.tight_layout()
     plt.savefig('co2_fink_science_{}_pandas.png'.format(__version__))
     plt.show()
