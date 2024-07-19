@@ -145,7 +145,7 @@ actually only called 30 times.
 
 ## Performance checks
 
-to launch the performance test, you can use the `ztf/perf_science_modules.py` script:
+to launch the performance test, you can use the `ztf/perf_science_modules.py` script. It will launch a series of Spark jobs to time each science module.
 
 ```bash
 python perf_science_modules.py -h
