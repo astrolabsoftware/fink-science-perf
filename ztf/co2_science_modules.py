@@ -199,7 +199,7 @@ def plot_histogram_co2(modules, kind='ztf'):
 
     plt.yscale('log')
     plt.xticks(rotation=90)
-    plt.ylim(10, None)
+    #plt.ylim(10, None)
     plt.tight_layout()
     plt.savefig('co2_fink_science_{}_pandas.png'.format(__version__))
     plt.show()
@@ -344,7 +344,7 @@ if __name__ == "__main__":
        args.gb_per_executor,
        args.core_per_executor,
        args.night,
-       total_alerts
+       len(pdf)
     )
 
 
