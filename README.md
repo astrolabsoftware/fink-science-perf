@@ -207,7 +207,7 @@ First we assume a PUE of the center of 1.25, and leave the rest of the parameter
 
 We do two measurements: (A) the measure of the energy consumed during the execution of a science module (on 200k alerts), and (B) another measurement lasting the same amount of time with nothing particular running from our side. The two measurements are done one after each other, and we assume that the state of the server remains the same (no external jobs launched).
 
-```
+```bash
 [profiling  INFO @ 03:59:56] Early SN Ia
 # (A)
 [codecarbon INFO @ 15:59:51] Energy consumed for RAM : 0.000001 kWh. RAM Power : 0.9447441101074219 W
@@ -224,4 +224,9 @@ We do two measurements: (A) the measure of the energy consumed during the execut
 [profiling  INFO @ 04:00:23] DIF: -0.00 # difference
 ```
 
-On average, the emission rate (B) is around 30 kgCO2eq/year (again, one should not take this at face value, this depends on all the assumption entered in the measurement), and for all science module, the energy consumed in (A) is identical to the one in (B) (to the precision of the measurement). So either our science module is not consuming much compared to the electricty required to just keep the machine alive, or  
+On average, the emission rate (B) is around 30 kgCO2eq/year (again, one should not take this at face value, this depends on all the assumptions entered in the measurement), and for all science modules, the energy consumed in (A) is identical to the one in (B) (to the precision of the measurement). So either our science module is not consuming much compared to the electricty required to just keep the machine alive, or we do something wrong (e.g. the run is not long enough, some assumptions are wrong, etc.)
+
+#### What is consuming the most: cpu, RAM, or just the machine itself?  
+
+TODO: make measurement on cpu-bound and IO
+
