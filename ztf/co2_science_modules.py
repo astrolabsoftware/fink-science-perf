@@ -325,7 +325,7 @@ if __name__ == "__main__":
 
                 # Raw throughput (single core)
                 throughput.append(len(pdf) / (time.time() - t0))
-                co2.append(tracker.final_emissions_data.values['emissions_rate'])
+            co2.append(tracker.final_emissions_data.values['emissions_rate'])
 
             spark.stop()
 
