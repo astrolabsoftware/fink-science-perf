@@ -35,6 +35,7 @@ import logging
 import argparse
 import numpy as np
 import pandas as pd
+from codecarbon import EmissionsTracker
 
 from ztf.log_format import apply_logger_conf
 
