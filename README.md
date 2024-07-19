@@ -145,4 +145,32 @@ actually only called 30 times.
 
 ## Performance checks
 
-TBD
+to launch the performance test, you can use the `ztf/perf_science_modules.py` script:
+
+```bash
+python perf_science_modules.py -h
+usage: perf_science_modules.py [-h] [-night NIGHT] [-total_memory TOTAL_MEMORY]
+                               [-gb_per_executor GB_PER_EXECUTOR]
+                               [-core_per_executor CORE_PER_EXECUTOR]
+                               [-nloops NLOOPS]
+
+Science modules performance using Apache Spark for ZTF
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -night NIGHT          Night in the form YYYYMMDD. Default is 20240716 (200k
+                        alerts)
+  -total_memory TOTAL_MEMORY
+                        Total RAM for the job in GB. Default is 16GB.
+  -gb_per_executor GB_PER_EXECUTOR
+                        Total RAM per executor. Default is 2GB.
+  -core_per_executor CORE_PER_EXECUTOR
+                        Number of core per executor. Default is 1.
+  -nloops NLOOPS        Number of times to run the performance test. Default is 2.
+```
+
+Note that is assumes you are on the Fink Apache Spark cluster at VirtualData. Edit the script otherwise with your correct master URI and path to the data. By default the script will run performance test using 8 cores with 2GB RAM each on the ZTF night 20240416 (212,039 alerts).
+
+Here is the result for `fink-science==5.9.0` for ZTF alert data:
+
+![perf_ztf](ztf/static/perfs_5.9.0.png)
