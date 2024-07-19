@@ -145,7 +145,9 @@ actually only called 30 times.
 
 ## Performance checks
 
-to launch the performance test, you can use the `ztf/perf_science_modules.py` script. It will launch a series of Spark jobs to time each science module.
+### Timing science modules
+
+To launch the performance test, you can use the `ztf/perf_science_modules.py` script. It will launch a series of Spark jobs to time each science module.
 
 ```bash
 python perf_science_modules.py -h
@@ -169,8 +171,57 @@ optional arguments:
   -nloops NLOOPS        Number of times to run the performance test. Default is 2.
 ```
 
-Note that is assumes you are on the Fink Apache Spark cluster at VirtualData. Edit the script otherwise with your correct master URI and path to the data. By default the script will run performance test using 8 cores with 2GB RAM each on the ZTF night 20240416 (212,039 alerts).
+Note that it makes little sense to make performance tests from within a single container, and this script assumes you are on the Fink Apache Spark cluster at VirtualData. Edit the script otherwise with your correct master URI and path to the data. By default the script will run performance test using 8 cores with 2GB RAM each on the ZTF night 20240416 (212,039 alerts).
 
 Here is the result for `fink-science==5.9.0` for ZTF alert data:
 
 ![perf_ztf](ztf/static/perfs_5.9.0.png)
+
+
+Note that if we profile directly the functions without Spark (see `ztf/co2_science_modules.py`), we obtain the same behaviour, but we about x10 speed-up. We need to investigate.
+
+### Inferring CO2eq emissions
+
+Based on [codecarbon](https://github.com/mlco2/codecarbon), we try to gain some insights regarding the CO2eq emissions linked to Fink operations. There are many caveats here, and one should be cautious with the results. In all results below, we use the codecarbon converter to transform energy measurement into kgCO2eq emissions, and corresponding rate. All operations are done on the spark-master @ VirtualData:
+
+```
+[codecarbon INFO @ 16:00:45]   Platform system: Linux-3.10.0-1160.36.2.el7.x86_64-x86_64-with-glibc2.17
+[codecarbon INFO @ 16:00:45]   Python version: 3.9.13
+[codecarbon INFO @ 16:00:45]   CodeCarbon version: 2.5.0
+[codecarbon INFO @ 16:00:45]   Available RAM : 35.196 GB
+[codecarbon INFO @ 16:00:45]   CPU count: 18
+[codecarbon INFO @ 16:00:45]   CPU model: AMD EPYC 7702 64-Core Processor
+[codecarbon INFO @ 16:00:45]   GPU count: None
+[codecarbon INFO @ 16:00:45]   GPU model: None
+```
+
+and we execute the tests using:
+
+```bash
+taskset --cpu-list 0 python ztf/co2_science_modules.py
+```
+
+#### Default parameters
+
+First we assume a PUE of the center of 1.25, and leave the rest of the parameters as default. The program recognises that we are in France, and it applies the energy mix accordingly. However, we could not access the CPU tracking mode, and a constant consumption mode was used instead (AMD EPYC 7702 64-Core Processor). 
+
+We do two measurements: (A) the measure of the energy consumed during the execution of a science module (on 200k alerts), and (B) another measurement lasting the same amount of time with nothing particular running from our side. The two measurements are done one after each other, and we assume that the state of the server remains the same (no external jobs launched).
+
+```
+[profiling  INFO @ 03:59:56] Early SN Ia
+# (A)
+[codecarbon INFO @ 15:59:51] Energy consumed for RAM : 0.000001 kWh. RAM Power : 0.9447441101074219 W
+[codecarbon INFO @ 15:59:51] Energy consumed for all CPUs : 0.000090 kWh. Total CPU Power : 100.0 W
+[codecarbon INFO @ 15:59:51] 0.000091 kWh of electricity used since the beginning.
+...
+# (B)
+[codecarbon INFO @ 15:59:54] Energy consumed for RAM : 0.000001 kWh. RAM Power : 0.9447441101074219 W
+[codecarbon INFO @ 15:59:54] Energy consumed for all CPUs : 0.000091 kWh. Total CPU Power : 100.0 W
+[codecarbon INFO @ 15:59:54] 0.000092 kWh of electricity used since the beginning.
+...
+[profiling  INFO @ 04:00:23] RAW: 31.27 # (A) in kgCO2eq/year
+[profiling  INFO @ 04:00:23] BAS: 31.27 # (B) in kgCO2eq/year
+[profiling  INFO @ 04:00:23] DIF: -0.00 # difference
+```
+
+On average, the emission rate (B) is around 30 kgCO2eq/year (again, one should not take this at face value, this depends on all the assumption entered in the measurement), and for all science module, the energy consumed in (A) is identical to the one in (B) (to the precision of the measurement). So either our science module is not consuming much compared to the electricty required to just keep the machine alive, or  
