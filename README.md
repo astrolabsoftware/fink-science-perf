@@ -27,8 +27,8 @@ and register your credentials on the container:
 # Install the client
 pip install fink-client
 
-# register
-fink_client_register -username julien -group_id julien -mytopics nil -servers 134.158.74.95:24499
+# register using your credentials
+fink_client_register ... 
 ```
 
 Trigger a job on the Data Transfer service and download data in your container (July 12 2024 is good to start, only 17k alerts):
