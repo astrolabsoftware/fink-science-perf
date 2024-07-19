@@ -320,11 +320,29 @@ if __name__ == "__main__":
 
             with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker:
                 t0 = time.time()
-                out = module_prop["processor"].__wrapped__(*[pdf[col] for col in pdf.columns])
+                if module_name == "Feature extraction":
+                    # scalar udf
+                    for index, row in pdf.iterrows():
+                        out = module_prop["processor"].__wrapped__(*[row[k] for k in pdf.columns])
+                else:
+                    # pandas udf (vectorised)
+                    out = module_prop["processor"].__wrapped__(*[pdf[col] for col in pdf.columns])
 
                 # Raw throughput (single core)
                 throughput.append(len(pdf) / (time.time() - t0))
-            co2.append(tracker.final_emissions_data.values['emissions_rate'])
+
+            raw_emission = tracker.final_emissions_data.values['emissions_rate']
+
+            # monitor the platform for the same time
+            with EmissionsTracker(tracking_mode='process', pue=1.25) as tracker_:
+                time.sleep(tracker.final_emissions_data.values['duration'])
+
+            baseline_emission = tracker_.final_emissions_data.values['emissions_rate']
+
+            _LOG.info("RAW: {:.2f}".format(raw_emission * 8 * 3600 * 365))
+            _LOG.info("BAS: {:.2f}".format(baseline_emission * 8 * 3600 * 365))
+            _LOG.info("DIF: {:.2f}".format((raw_emission - baseline_emission) * 8 * 3600 * 365))
+            co2.append(raw_emission - baseline_emission)
 
             spark.stop()
 
