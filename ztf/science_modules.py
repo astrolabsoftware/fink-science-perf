@@ -42,7 +42,7 @@ def load_ztf_modules(module_name="") -> dict:
                 "cmagpsf",
                 F.col("cutoutScience.stampData").alias("cutoutScience"),
                 F.col("cutoutTemplate.stampData").alias("cutoutTemplate"),
-                "objectId"
+                "objectId",
             ],
             "type": "feature",
             "colname": "hostless",
