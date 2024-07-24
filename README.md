@@ -1,8 +1,6 @@
 # Profiling & performance for fink-science
 
-This repository contains scripts to perform the profiling of [fink-science](https://github.com/astrolabsoftware/fink-science) modules.
-
-The goal is... Note simple profiling... More information with perf...  
+This repository contains scripts to perform the profiling and performance checks of [fink-science](https://github.com/astrolabsoftware/fink-science) modules.
 
 ## Environment
 
@@ -171,7 +169,7 @@ optional arguments:
   -nloops NLOOPS        Number of times to run the performance test. Default is 2.
 ```
 
-Note that it makes little sense to make performance tests from within a single container, and this script assumes you are on the Fink Apache Spark cluster at VirtualData. Edit the script otherwise with your correct master URI and path to the data. By default the script will run performance test using 8 cores with 2GB RAM each on the ZTF night 20240416 (212,039 alerts).
+Note that it makes little sense to make performance tests from within a single container, and this script assumes you are on the Fink Apache Spark cluster at VirtualData. Edit `perf_science_modules.py` and `utils.load_spark_session` with your correct master URI, path to the data and mesos configuration. By default the script will run performance test using 8 cores with 2GB RAM each on the ZTF night 20240416 (212,039 alerts).
 
 Here is the result for `fink-science==5.9.0` for ZTF alert data:
 
