@@ -26,5 +26,5 @@ jobs:
         pip install ruff
     - name: ztf
       run: |
-        ruff check --statistics --preview ztf/*.py
-        ruff format --check --preview ztf/*.py
+        ruff check --statistics ztf/*.py
+        ruff format --check ztf/*.py
