@@ -38,7 +38,7 @@ jobs:
         tar -xvf ftransfer_ztf_2024-07-24_50931.tar.gz
     - name: Run profiling on Fink-science
       run: |
-        ./profile_module.sh -name "Early SN Ia" -d ftransfer_ztf_2024-07-24_50931
+        ./profile_module.sh -d ftransfer_ztf_2024-07-24_50931
     - name: Archive production artifacts
       uses: actions/upload-artifact@v4
       with:
