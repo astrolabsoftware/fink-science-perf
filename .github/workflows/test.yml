@@ -40,7 +40,7 @@ jobs:
       run: |
         ./profile_module.sh -name "Early SN Ia" -d ftransfer_ztf_2024-07-24_50931
     - name: Archive production artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: profiling
-          path: *.lprof
+      uses: actions/upload-artifact@v4
+      with:
+        name: profiling
+        path: *.lprof

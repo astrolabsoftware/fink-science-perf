@@ -24,11 +24,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install ruff
-    - name: fink-broker
+    - name: ztf
       run: |
-        ruff check --statistics --preview fink_broker/*.py
-        ruff format --check --preview fink_broker/*.py
-    - name: bin
-      run: |
-        ruff check --preview --statistics bin/*.py
-        ruff format --check --preview bin/*.py
+        ruff check --statistics --preview ztf/*.py
+        ruff format --check --preview ztf/*.py
