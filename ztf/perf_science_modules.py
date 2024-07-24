@@ -18,6 +18,7 @@ from ztf.science_modules import load_ztf_modules
 from ztf.utils import load_spark_session
 from ztf.utils import plot_histogram
 from ztf.utils import save_on_disk
+from ztf.utils import concat
 
 from ztf.log_format import apply_logger_conf
 

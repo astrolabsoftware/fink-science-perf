@@ -20,6 +20,7 @@ import numpy as np
 import pandas as pd
 
 from fink_science import __version__
+from fink_utils.spark.utils import concat_col
 
 
 def plot_histogram(modules, kind='ztf'):
@@ -110,3 +111,17 @@ def load_spark_session(n_cpu, gb_per_cpu, principal="lsst", secret="secret", rol
     spark.sparkContext.setLogLevel("OFF")
 
     return spark
+
+def concat(df):
+    """Retrieve time-series information. """
+    # should include all necessary aggregation
+    what = [
+        'jd', 'magpsf', 'sigmapsf', 'fid',
+        'magnr', 'sigmagnr', 'isdiffpos', 'diffmaglim', 'distnr'
+    ]
+
+    prefix = 'c'
+    what_prefix = [prefix + i for i in what]
+    for colname in what:
+        df = concat_col(df, colname, prefix=prefix)
+    return df

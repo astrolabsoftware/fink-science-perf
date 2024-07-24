@@ -25,9 +25,6 @@ from fink_science.anomaly_detection.processor import anomaly_score
 from fink_science.fast_transient_rate.processor import magnitude_rate
 from fink_science.ad_features.processor import extract_features_ad
 
-from fink_utils.spark.utils import concat_col
-
-
 def load_ztf_modules() -> dict:
     """
     """
@@ -100,17 +97,3 @@ def load_ztf_modules() -> dict:
     }
 
     return modules
-
-def concat(df):
-    """Retrieve time-series information. """
-    # should include all necessary aggregation
-    what = [
-        'jd', 'magpsf', 'sigmapsf', 'fid',
-        'magnr', 'sigmagnr', 'isdiffpos', 'diffmaglim', 'distnr'
-    ]
-
-    prefix = 'c'
-    what_prefix = [prefix + i for i in what]
-    for colname in what:
-        df = concat_col(df, colname, prefix=prefix)
-    return df
