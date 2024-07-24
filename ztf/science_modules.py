@@ -25,9 +25,12 @@ from fink_science.anomaly_detection.processor import anomaly_score
 from fink_science.fast_transient_rate.processor import magnitude_rate
 from fink_science.ad_features.processor import extract_features_ad
 
-def load_ztf_modules() -> dict:
-    """
-    """
+import logging
+
+
+_LOG = logging.getLogger(__name__)
+
+def load_ztf_modules(module_name="") -> dict:
     """Configuration with all science modules."""
     modules = {
         'CDS xmatch (SIMBAD)': {
@@ -54,10 +57,10 @@ def load_ztf_modules() -> dict:
             'type': 'ml',
             'colname': 'rf_kn_vs_nonkn'
         },
-        # 'Anomaly': {
-        #     'processor': anomaly_score,
-        #     'cols': ["lc_features"]
-        # },
+        'Anomaly': {
+            'processor': anomaly_score,
+            'cols': ["lc_features"]
+        },
         'Fast transient': {
             'processor': magnitude_rate,
             'cols': ['candidate.magpsf', 'candidate.sigmapsf', 'candidate.jd', 'candidate.jdstarthist', 'candidate.fid', 'cmagpsf', 'csigmapsf', 'cjd', 'cfid', 'cdiffmaglim', F.lit(1000).alias("N"), F.lit(None).alias("seed")],
@@ -93,7 +96,13 @@ def load_ztf_modules() -> dict:
             'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', 'cdsxmatch', F.col('candidate.ndethist')],
             'type': 'ml',
             'colname': 'rf_snia_vs_nonia'
-        }
+        },
     }
+
+    if module_name != "":
+        out = {k:v for k, v in modules.items() if k == module_name}
+        if len(out) == 0:
+            _LOG.error("The module name {} is not correct. Choose between: {}".format(module_name, modules.keys()))
+        return out
 
     return modules

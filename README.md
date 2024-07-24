@@ -84,11 +84,30 @@ and install the code:
 pip install .
 ```
 
-and finally in `/path/to/fink-science-perf`, add a new script `prof_YOUR_MODULE_NAME.py` to test the module (see e.g. scripts in [ztf/](ztf/)) and profile your code with:
+and finally in `/path/to/fink-science-perf`, update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py):
+
+```diff
+@@ -98,13 +96,21 @@ def load_ztf_modules(module_name="") -> dict:
+             'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', 'cdsxmatch', F.col('candidate.ndethist')],
+             'type': 'ml',
+             'colname': 'rf_snia_vs_nonia'
++        },
++        {
++            'My New module': {
++                'processor': name_of_the_function_in_fink_science,
++                'cols': ['list', 'of', 'required', 'columns'],
++                'type': 'xmatch or ml or feature',
++                'colname': 'the name of the new column'
++            }
+         }
+     }
+```
+
+and profile your code with:
 
 ```bash
 # Change arguments accordingly
-./run_benchmark.sh -f ztf/prof_YOUR_MODULE_NAME.py -d /data/$TOPIC
+./profile_module.sh -name 'My New module' -d /data/$TOPIC
 ```
 
 Dependending on how many decorators you put in the code,
@@ -226,5 +245,5 @@ On average, the emission rate (B) is around 30 kgCO2eq/year (again, one should n
 
 #### What is consuming the most: cpu, RAM, or just the machine itself?  
 
-TODO: make measurement on cpu-bound and IO
+TODO: make measurements on cpu-bound and IO
 

@@ -95,6 +95,13 @@ if __name__ == "__main__":
 
             df = concat(df)
 
+            # Recompute lc_features for anomaly
+            if module_name == "Anomaly":
+                df = df.withColumn(
+                    modules["Feature extraction"]["colname"],
+                    modules["Feature extraction"]["processor"](*modules["Feature extraction"]["cols"])
+                )
+
             df = df.select(module_prop["cols"]).repartition(numPartitions=int(n_cpu))
 
             # Cache to reduce I/O perturbations

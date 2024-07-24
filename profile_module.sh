@@ -1,11 +1,11 @@
 #!/bin/bash
 
-FILENAME=""
+NAME=""
 DATAFOLDER=""
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    -f)
-        FILENAME="$2"
+    -name)
+        NAME="$2"
         shift 2
         ;;
     -d)
@@ -15,9 +15,11 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-if [[ $FILENAME == "" ]]; then
-  echo "You need to specify a filename with the argument -f"
-  exit
+if [[ $NAME == "" ]]; then
+  echo "No module name specified, all modules will be profiled."
+  OUTPROF=profiling_all.lprof
+else
+  OUTPROF=profiling_$NAME.lprof
 fi
 
 if [[ $DATAFOLDER == "" ]]; then
@@ -25,6 +27,6 @@ if [[ $DATAFOLDER == "" ]]; then
   exit
 fi
 
-
-kernprof -l $FILENAME -d $DATAFOLDER
-python -m line_profiler $(basename ${FILENAME}).lprof
+kernprof -l -v --outfile "${OUTPROF// /_}" ztf/prof_science_module.py \
+	-module_name="$NAME" \
+	-datafolder=$DATAFOLDER
