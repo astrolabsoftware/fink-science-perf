@@ -27,6 +27,8 @@ if [[ $DATAFOLDER == "" ]]; then
   exit
 fi
 
-kernprof -l -v --outfile "${OUTPROF// /_}" ztf/prof_science_module.py \
+kernprof -l --outfile "${OUTPROF// /_}" ztf/prof_science_module.py \
 	-module_name="$NAME" \
 	-datafolder=$DATAFOLDER
+
+python -m line_profiler -mtz "${OUTPROF// /_}"
