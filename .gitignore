@@ -1,1 +1,4 @@
 *.lprof
+emissions.csv
+ftransfer_*/
+__pycache__
