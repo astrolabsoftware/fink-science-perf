@@ -1,0 +1,46 @@
+name: Sentinel
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-suite:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        container: ["julienpeloton/fink-ci:latest"]
+
+    container:
+      image: ${{ matrix.container }}
+
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up env from container variables
+      run: |
+        echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
+        echo "PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.9.7-src.zip:${FINK_HOME}:${PYTHONPATH}" >> $GITHUB_ENV
+        echo "${BINPATH}" >> $GITHUB_PATH
+    - name: Download data
+      run: |
+        curl https://box.in2p3.fr/s/KFJ2pWDqNB85WNn/download --output ftransfer_ztf_2024-07-24_50931.tar.gz
+        tar -xvf ftransfer_ztf_2024-07-24_50931.tar.gz
+    - name: Run profiling on Fink-science
+      run: |
+        ./profile_module.sh -name "Early SN Ia" -d ftransfer_ztf_2024-07-24_50931
+    - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: profiling
+          path: *.lprof
