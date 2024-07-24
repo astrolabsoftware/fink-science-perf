@@ -14,6 +14,7 @@
 # limitations under the License.
 import logging
 
+
 def apply_logger_conf(level: str) -> None:
     """Apply logging formatting
 

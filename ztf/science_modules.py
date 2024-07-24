@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Science modules in Fink"""
+
 import pyspark.sql.functions as F
 
 from fink_science.microlensing.processor import mulens
@@ -30,79 +31,164 @@ import logging
 
 _LOG = logging.getLogger(__name__)
 
+
 def load_ztf_modules(module_name="") -> dict:
     """Configuration with all science modules."""
     modules = {
-        'CDS xmatch (SIMBAD)': {
-            'processor': cdsxmatch,
-            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("simbad"), F.lit("main_type")],
-            'type': 'xmatch',
-            'colname': 'cdsxmatch'
+        "CDS xmatch (SIMBAD)": {
+            "processor": cdsxmatch,
+            "cols": [
+                "candidate.candid",
+                "candidate.ra",
+                "candidate.dec",
+                F.lit(1.0).alias("radius"),
+                F.lit("simbad"),
+                F.lit("main_type"),
+            ],
+            "type": "xmatch",
+            "colname": "cdsxmatch",
         },
-        'CDS xmatch (vizier)': {
-            'processor': cdsxmatch,
-            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit(1.0).alias("radius"), F.lit("vizier:I/355/gaiadr3"), F.lit("DR3Name,Plx,e_Plx")],
-            'type': 'xmatch',
-            'colname': 'gaia'
+        "CDS xmatch (vizier)": {
+            "processor": cdsxmatch,
+            "cols": [
+                "candidate.candid",
+                "candidate.ra",
+                "candidate.dec",
+                F.lit(1.0).alias("radius"),
+                F.lit("vizier:I/355/gaiadr3"),
+                F.lit("DR3Name,Plx,e_Plx"),
+            ],
+            "type": "xmatch",
+            "colname": "gaia",
         },
-        'Local xmatch': {
-            'processor': crossmatch_other_catalog,
-            'cols': ['candidate.candid', 'candidate.ra', 'candidate.dec', F.lit("gcvs"), F.lit(1.5).alias("radius")],
-            'type': 'xmatch',
-            'colname': 'gcvs'
+        "Local xmatch": {
+            "processor": crossmatch_other_catalog,
+            "cols": [
+                "candidate.candid",
+                "candidate.ra",
+                "candidate.dec",
+                F.lit("gcvs"),
+                F.lit(1.5).alias("radius"),
+            ],
+            "type": "xmatch",
+            "colname": "gcvs",
         },
-        'Kilonova': {
-            'processor': knscore,
-            'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', F.col('candidate.jdstarthist'), F.col('cdsxmatch'), F.col('candidate.ndethist')],
-            'type': 'ml',
-            'colname': 'rf_kn_vs_nonkn'
+        "Kilonova": {
+            "processor": knscore,
+            "cols": [
+                "cjd",
+                "cfid",
+                "cmagpsf",
+                "csigmapsf",
+                F.col("candidate.jdstarthist"),
+                F.col("cdsxmatch"),
+                F.col("candidate.ndethist"),
+            ],
+            "type": "ml",
+            "colname": "rf_kn_vs_nonkn",
         },
-        'Anomaly': {
-            'processor': anomaly_score,
-            'cols': ["lc_features"]
+        "Anomaly": {"processor": anomaly_score, "cols": ["lc_features"]},
+        "Fast transient": {
+            "processor": magnitude_rate,
+            "cols": [
+                "candidate.magpsf",
+                "candidate.sigmapsf",
+                "candidate.jd",
+                "candidate.jdstarthist",
+                "candidate.fid",
+                "cmagpsf",
+                "csigmapsf",
+                "cjd",
+                "cfid",
+                "cdiffmaglim",
+                F.lit(1000).alias("N"),
+                F.lit(None).alias("seed"),
+            ],
+            "type": "feature",
+            "colname": "fast_transient",
         },
-        'Fast transient': {
-            'processor': magnitude_rate,
-            'cols': ['candidate.magpsf', 'candidate.sigmapsf', 'candidate.jd', 'candidate.jdstarthist', 'candidate.fid', 'cmagpsf', 'csigmapsf', 'cjd', 'cfid', 'cdiffmaglim', F.lit(1000).alias("N"), F.lit(None).alias("seed")],
-            'type': 'feature',
-            'colname': 'fast_transient'
+        "Feature extraction": {
+            "processor": extract_features_ad,
+            "cols": [
+                "cmagpsf",
+                "cjd",
+                "csigmapsf",
+                "cfid",
+                "objectId",
+                "cdistnr",
+                "cmagnr",
+                "csigmagnr",
+                "cisdiffpos",
+            ],
+            "type": "feature",
+            "colname": "lc_features",
         },
-        'Feature extraction': {
-            'processor': extract_features_ad,
-            'cols': ['cmagpsf', 'cjd', 'csigmapsf', 'cfid', 'objectId', 'cdistnr', 'cmagnr', 'csigmagnr', 'cisdiffpos'],
-            'type': 'feature',
-            'colname': 'lc_features'
+        "Microlensing": {
+            "processor": mulens,
+            "cols": [
+                "cfid",
+                "cmagpsf",
+                "csigmapsf",
+                "cmagnr",
+                "csigmagnr",
+                "cisdiffpos",
+                "candidate.ndethist",
+            ],
+            "type": "ml",
+            "colname": "mulens",
         },
-        'Microlensing': {
-            'processor': mulens,
-            'cols': ['cfid', 'cmagpsf', 'csigmapsf', 'cmagnr', 'csigmagnr', 'cisdiffpos', 'candidate.ndethist'],
-            'type': 'ml',
-            'colname': 'mulens'
+        "Asteroid": {
+            "processor": roid_catcher,
+            "cols": [
+                "cjd",
+                "cmagpsf",
+                "candidate.ndethist",
+                "candidate.sgscore1",
+                "candidate.ssdistnr",
+                "candidate.distpsnr1",
+            ],
+            "type": "feature",
+            "colname": "roid",
         },
-        'Asteroid': {
-            'processor': roid_catcher,
-            'cols': ['cjd', 'cmagpsf', 'candidate.ndethist', 'candidate.sgscore1', 'candidate.ssdistnr', 'candidate.distpsnr1'],
-            'type': 'feature',
-            'colname': 'roid'
+        "SuperNNova": {
+            "processor": snn_ia,
+            "cols": [
+                "candid",
+                "cjd",
+                "cfid",
+                "cmagpsf",
+                "csigmapsf",
+                "roid",
+                "cdsxmatch",
+                "candidate.jdstarthist",
+                F.lit("snn_snia_vs_nonia"),
+            ],
+            "type": "ml",
+            "colname": "snn_snia_vs_nonia",
         },
-        'SuperNNova': {
-            'processor': snn_ia,
-            'cols': ['candid', 'cjd', 'cfid', 'cmagpsf', 'csigmapsf', 'roid', 'cdsxmatch', 'candidate.jdstarthist', F.lit('snn_snia_vs_nonia')],
-            'type': 'ml',
-            'colname': 'snn_snia_vs_nonia'
-        },
-        'Early SN Ia': {
-            'processor': rfscore_sigmoid_full,
-            'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', 'cdsxmatch', F.col('candidate.ndethist')],
-            'type': 'ml',
-            'colname': 'rf_snia_vs_nonia'
+        "Early SN Ia": {
+            "processor": rfscore_sigmoid_full,
+            "cols": [
+                "cjd",
+                "cfid",
+                "cmagpsf",
+                "csigmapsf",
+                "cdsxmatch",
+                F.col("candidate.ndethist"),
+            ],
+            "type": "ml",
+            "colname": "rf_snia_vs_nonia",
         },
     }
 
     if module_name != "":
-        out = {k:v for k, v in modules.items() if k == module_name}
+        out = {k: v for k, v in modules.items() if k == module_name}
         if len(out) == 0:
-            _LOG.error("The module name {} is not correct. Choose between: {}".format(module_name, modules.keys()))
+            _LOG.error(
+                "The module name {} is not correct. Choose between: {}".format(
+                    module_name, modules.keys()
+                )
+            )
         return out
 
     return modules

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Science modules performance using Apache Spark for ZTF"""
+
 from fink_science import __version__
 from ztf.science_modules import load_ztf_modules
 from ztf.utils import load_spark_session
@@ -65,13 +66,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args(None)
 
-    _LOG.info('Fink Science version: {}'.format(__version__))
+    _LOG.info("Fink Science version: {}".format(__version__))
 
     # setup
     gb_per_cpus = [args.gb_per_executor] * args.nloops
     n_cpus = [args.total_memory / i for i in gb_per_cpus]
 
-    _LOG.info('Benchmark will be done using {} cores total'.format(n_cpus[0]))
+    _LOG.info("Benchmark will be done using {} cores total".format(n_cpus[0]))
 
     # You need the spark session active
     # to load modules
@@ -83,12 +84,10 @@ if __name__ == "__main__":
         _LOG.info(module_name)
         throughput = []
         for n_cpu, gb_per_cpu in zip(n_cpus, gb_per_cpus):
-
             spark = load_spark_session(n_cpu=n_cpu, gb_per_cpu=gb_per_cpu)
 
-
-            df = spark.read.format('parquet').load(
-                'archive/science/year={}/month={}/day={}'.format(
+            df = spark.read.format("parquet").load(
+                "archive/science/year={}/month={}/day={}".format(
                     args.night[:4], args.night[4:6], args.night[6:8]
                 )
             )
@@ -99,7 +98,9 @@ if __name__ == "__main__":
             if module_name == "Anomaly":
                 df = df.withColumn(
                     modules["Feature extraction"]["colname"],
-                    modules["Feature extraction"]["processor"](*modules["Feature extraction"]["cols"])
+                    modules["Feature extraction"]["processor"](
+                        *modules["Feature extraction"]["cols"]
+                    ),
                 )
 
             df = df.select(module_prop["cols"]).repartition(numPartitions=int(n_cpu))
@@ -110,24 +111,25 @@ if __name__ == "__main__":
 
             total_alerts = df.count()
 
-            _LOG.info('Number of alerts: {:,}'.format(total_alerts))
+            _LOG.info("Number of alerts: {:,}".format(total_alerts))
 
             # TODO: define a condition for each module to
             # know how many alerts are really processed
 
             t0 = time.time()
-            pdf = df.withColumn(
-                'tmp',
-                module_prop["processor"](*df.columns)
-            ).select('tmp').toPandas()
+            pdf = (
+                df.withColumn("tmp", module_prop["processor"](*df.columns))
+                .select("tmp")
+                .toPandas()
+            )
             t_lapse = time.time() - t0
-            throughput.append(total_alerts/t_lapse/n_cpu)
+            throughput.append(total_alerts / t_lapse / n_cpu)
             spark.stop()
 
         modules[module_name]["result"] = throughput
 
     # plot
-    plot_histogram(modules, kind='ztf')
+    plot_histogram(modules, kind="ztf")
 
     # save parquet
     save_on_disk(
@@ -136,9 +138,5 @@ if __name__ == "__main__":
         args.gb_per_executor,
         args.core_per_executor,
         args.night,
-        total_alerts
+        total_alerts,
     )
-
-
-
-
