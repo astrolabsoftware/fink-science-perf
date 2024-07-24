@@ -2,7 +2,53 @@
 
 This repository contains scripts to perform the profiling and performance checks of [fink-science](https://github.com/astrolabsoftware/fink-science) modules.
 
-## Environment
+## Online profiling
+
+In order to profile user-defined functions in fink-science, you can use this repository:
+1. clone (or fork) this repository
+2. create a new branch
+3. uncomment the section `Install custom fink-science version` in the [action](.github/workflows/test.yml) and install your branch with your new science module:
+
+```yaml
+- name: Install custom fink-science version
+  run: |
+   # remove fink-science
+   pip uninstall -y fink-science
+   # change to your branch
+   pip install git+https://github.com/astrolabsoftware/fink-science.git@issue/397/profiling
+```
+
+4. in `/path/to/fink-science-perf`, update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py) with your new science module:
+
+```diff
+@@ -98,13 +96,21 @@ def load_ztf_modules(module_name="") -> dict:
+             'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', 'cdsxmatch', F.col('candidate.ndethist')],
+             'type': 'ml',
+             'colname': 'rf_snia_vs_nonia'
++        },
++        {
++            'My New module': {
++                'processor': name_of_the_function_in_fink_science,
++                'cols': ['list', 'of', 'required', 'columns'],
++                'type': 'xmatch or ml or feature',
++                'colname': 'the name of the new column'
++            }
+         }
+     }
+```
+
+
+5. Push the code. You can inspect the results on the action log: 
+
+![artifact_log](ztf/static/artifact_log.png)
+
+or you can also download the artifact from the action page:
+ 
+![artifact_download](ztf/static/artifact_download.png) 
+
+## Manual profiling
+
+You can also do the profiling directly on your computer.
 
 ### Docker
 
@@ -17,7 +63,18 @@ docker run -t -i --rm julienpeloton/fink-ci:latest bash
 
 ### Data
 
-The best is to use the [Data Transfer](https://fink-portal.org/download) service to get tailored data for your test.
+#### Direct download
+
+You can simply download a sample of data (ZTF alerts, July 12 2024):
+
+```bash
+curl https://box.in2p3.fr/s/KFJ2pWDqNB85WNn/download --output ftransfer_ztf_2024-07-24_50931.tar.gz
+tar -xvf ftransfer_ztf_2024-07-24_50931.tar.gz
+```
+
+#### Fink data transfer
+
+But the best is to use the [Data Transfer](https://fink-portal.org/download) service to get tailored data for your test.
 Make sure you have an account to use the [fink-client](https://github.com/astrolabsoftware/fink-client). Install it
 and register your credentials on the container:
 
@@ -43,16 +100,9 @@ fink_datatransfer \
             --verbose
 ```
 
-## Profiling
+### Profiling a new PR in fink-science
 
-### Default
-
-By default, the latest version of fink-science is installed in the container. 
-Walk to the folder ztf, and launch ... TODO: script to test individual module, or all.
-
-### Profiling a new PR
-
-In case a user opens a new PR and you want to profile the new code, you first need to
+In case a user opens a new PR in fink-science and you want to profile the new code, you first need to
 remove the fink-science dependency in the container:
 
 ```bash
