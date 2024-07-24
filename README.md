@@ -18,7 +18,7 @@ In order to profile user-defined functions in fink-science, you can use this rep
    pip install git+https://github.com/astrolabsoftware/fink-science.git@issue/397/profiling
 ```
 
-4. in `/path/to/fink-science-perf`, update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py) with your new science module:
+4. If you are testing a new module, update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py) with your new science module:
 
 ```diff
 @@ -98,13 +96,21 @@ def load_ztf_modules(module_name="") -> dict:
