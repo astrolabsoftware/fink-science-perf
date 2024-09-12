@@ -147,3 +147,19 @@ def concat(df):
     for colname in what:
         df = concat_col(df, colname, prefix=prefix)
     return df
+
+def concat_elasticc(df):
+    """Retrieve time-series information."""
+    # should include all necessary aggregation
+    what = [
+        "midPointTai",
+        "Flux",
+        "FluxErr",
+        "filterName"
+    ]
+
+    prefix = "c"
+    for colname in what:
+        df = concat_col(df, colname, prefix=prefix, current="diaSource", history="prvDiaForcedSources")
+    return df
+
