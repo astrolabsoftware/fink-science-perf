@@ -1,4 +1,4 @@
-# Copyright 2024 AstroLab Software
+# Copyright 2024-2025 AstroLab Software
 # Author: Julien Peloton
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Profile science modules for ZTF"""
+"""Profile science modules for Rubin"""
 
 from pyspark.sql import SparkSession
 from fink_science import __version__
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         "-module_name",
         type=str,
         default="",
-        help="Name of the module to perform. See ztf/science_modules for available names. Default is empty string, meaning all modues will be profiled.",
+        help="Name of the module to perform. See rubin/science_modules for available names. Default is empty string, meaning all modules will be profiled.",
     )
     args = parser.parse_args(None)
 
@@ -59,27 +59,12 @@ if __name__ == "__main__":
     for module_name, module_prop in modules.items():
         _LOG.info("Profiling {}".format(module_name))
 
-        # Recompute lc_features for anomaly
-        if module_name == "Anomaly":
-            df = df.withColumn(
-                modules["Feature extraction"]["colname"],
-                modules["Feature extraction"]["processor"](
-                    *modules["Feature extraction"]["cols"]
-                ),
-            )
-
         pdf = df.select(module_prop["cols"]).toPandas()
+
         t0 = time.time()
-        if module_name == "Feature extraction":
-            # standard UDF
-            for _, row in pdf.iterrows():
-                out = module_prop["processor"].__wrapped__(
-                    *[row[k] for k in pdf.columns]
-                )
-        else:
-            out = module_prop["processor"].__wrapped__(
-                *[pdf[col] for col in pdf.columns]
-            )
+        out = module_prop["processor"].__wrapped__(
+            *[pdf[col] for col in pdf.columns]
+        )
 
         # Raw throughput (single core)
         _LOG.info(
