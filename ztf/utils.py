@@ -148,7 +148,7 @@ def concat(df):
         df = concat_col(df, colname, prefix=prefix)
     return df
 
-def concat_elasticc(df):
+def concat_rubin(df):
     """Retrieve time-series information."""
     # should include all necessary aggregation
     what = [

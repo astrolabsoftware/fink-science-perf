@@ -24,7 +24,7 @@ import logging
 _LOG = logging.getLogger(__name__)
 
 
-def load_elasticc_modules(module_name="") -> dict:
+def load_rubin_modules(module_name="") -> dict:
     """Configuration with all science modules."""
     modules = {
         "SLSN (with metadata)": {

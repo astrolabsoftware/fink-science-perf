@@ -21,8 +21,8 @@ import time
 import logging
 import argparse
 
-from rubin.science_modules import load_elasticc_modules
-from ztf.utils import concat_elasticc
+from rubin.science_modules import load_rubin_modules
+from ztf.utils import concat_rubin
 
 from ztf.log_format import apply_logger_conf
 
@@ -51,10 +51,10 @@ if __name__ == "__main__":
     spark = SparkSession.builder.master("local[*]").getOrCreate()
     spark.sparkContext.setLogLevel("ERROR")
 
-    modules = load_elasticc_modules(module_name=args.module_name)
+    modules = load_rubin_modules(module_name=args.module_name)
 
     df = spark.read.format("parquet").load(args.datafolder)
-    df = concat_elasticc(df)
+    df = concat_rubin(df)
 
     for module_name, module_prop in modules.items():
         _LOG.info("Profiling {}".format(module_name))
