@@ -17,6 +17,8 @@
 import pyspark.sql.functions as F
 
 from fink_science.slsn.processor import slsn_elasticc_with_md
+from fink_science.slsn.processor import slsn_elasticc_no_md
+from fink_science.cats.processor import predict_nn
 
 import logging
 
