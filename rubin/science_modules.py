@@ -44,6 +44,36 @@ def load_rubin_modules(module_name="") -> dict:
             "type": "ML",
             "colname": "slsn_with_md",
         },
+        "SLSN (no metadata)": {
+            "processor": slsn_elasticc_no_md,
+            "cols": [
+                "diaObject.diaObjectId",
+                "cmidPointTai",
+                "cpsFlux",
+                "cpsFluxErr",
+                "cfilterName",
+                "diaSource.ra",
+                "diaSource.decl",
+            ],
+            "type": "ML",
+            "colname": "slsn_no_md",
+        },
+        "CATS": {
+            "processor": predict_nn,
+            "cols": [
+                "cmidPointTai",
+                "cpsFlux",
+                "cpsFluxErr",
+                "cfilterName",
+                "diaObject.mwebv",
+                "diaObject.z_final",
+                "diaObject.z_final_err",
+                "diaObject.hostgal_zphot",
+                "diaObject.hostgal_zphot_err"
+            ],
+            "type": "ML",
+            "colname": "cats_preds"
+        }
     }
 
     if module_name != "":
