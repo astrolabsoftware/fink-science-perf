@@ -75,7 +75,7 @@ def load_rubin_modules(module_name="") -> dict:
             ],
             "type": "ML",
             "colname": "cats_preds_md"
-        }
+        },
         "CATS_nomd": {
             "processor": predict_nn,
             "cols": [
