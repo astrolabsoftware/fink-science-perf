@@ -60,7 +60,7 @@ def load_rubin_modules(module_name="") -> dict:
             "type": "ML",
             "colname": "slsn_no_md",
         },
-        "CATS": {
+        "CATS_md": {
             "processor": predict_nn,
             "cols": [
                 "cmidPointTai",
@@ -74,7 +74,18 @@ def load_rubin_modules(module_name="") -> dict:
                 "diaObject.hostgal_zphot_err"
             ],
             "type": "ML",
-            "colname": "cats_preds"
+            "colname": "cats_preds_md"
+        }
+        "CATS_nomd": {
+            "processor": predict_nn,
+            "cols": [
+                "cmidPointTai",
+                "cpsFlux",
+                "cpsFluxErr",
+                "cfilterName",
+            ],
+            "type": "ML",
+            "colname": "cats_preds_nomd"
         }
     }
 
