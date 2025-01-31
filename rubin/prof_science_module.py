@@ -21,7 +21,7 @@ import time
 import logging
 import argparse
 
-from elasticc.science_modules import load_elasticc_modules
+from rubin.science_modules import load_elasticc_modules
 from ztf.utils import concat_elasticc
 
 from ztf.log_format import apply_logger_conf
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     modules = load_elasticc_modules(module_name=args.module_name)
 
     df = spark.read.format("parquet").load(args.datafolder)
-    df = concat(df)
+    df = concat_elasticc(df)
 
     for module_name, module_prop in modules.items():
         _LOG.info("Profiling {}".format(module_name))

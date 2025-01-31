@@ -34,7 +34,7 @@ fi
 
 if [[ $SURVEY == "" ]]; then
   echo "You need to specify a survey with the argument -survey"
-  echo "Available: ztf, elasticc"
+  echo "Available: ztf, rubin"
   exit
 fi
 

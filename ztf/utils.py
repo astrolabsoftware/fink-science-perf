@@ -153,8 +153,8 @@ def concat_elasticc(df):
     # should include all necessary aggregation
     what = [
         "midPointTai",
-        "Flux",
-        "FluxErr",
+        "psFlux",
+        "psFluxErr",
         "filterName"
     ]
 
