@@ -25,6 +25,7 @@ from fink_science.kilonova.processor import knscore
 from fink_science.anomaly_detection.processor import anomaly_score
 from fink_science.fast_transient_rate.processor import magnitude_rate
 from fink_science.ad_features.processor import extract_features_ad
+from fink_science.hostless_detection.processor import run_potential_hostless
 
 import logging
 
@@ -35,6 +36,17 @@ _LOG = logging.getLogger(__name__)
 def load_ztf_modules(module_name="") -> dict:
     """Configuration with all science modules."""
     modules = {
+        "Hostless": {
+            "processor": run_potential_hostless,
+            "cols": [
+                "cmagpsf",
+                F.col("cutoutScience.stampData").alias("cutoutScience"),
+                F.col("cutoutTemplate.stampData").alias("cutoutTemplate"),
+                "objectId",
+            ],
+            "type": "feature",
+            "colname": "hostless",
+        },
         "CDS xmatch (SIMBAD)": {
             "processor": cdsxmatch,
             "cols": [
