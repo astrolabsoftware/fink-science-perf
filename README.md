@@ -115,6 +115,7 @@ and clone the targeted version:
 # e.g. modified version of fink-science
 # corresponding to PR https://github.com/astrolabsoftware/fink-science/pull/396
 git clone https://github.com/utthishtastro/fink-science.git
+cd fink-science
 git checkout hostless_detection
 ```
 
@@ -134,7 +135,7 @@ and install the code:
 pip install .
 ```
 
-and finally in `/path/to/fink-science-perf`, update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py):
+and finally clone this repository and update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py):
 
 ```diff
 @@ -98,13 +96,21 @@ def load_ztf_modules(module_name="") -> dict:
