@@ -14,8 +14,6 @@
 # limitations under the License.
 """Science modules in Fink"""
 
-import pyspark.sql.functions as F
-
 from fink_science.slsn.processor import slsn_elasticc_with_md
 from fink_science.slsn.processor import slsn_elasticc_no_md
 from fink_science.cats.processor import predict_nn
@@ -41,7 +39,7 @@ def load_rubin_modules(module_name="") -> dict:
                 "diaSource.decl",
                 "diaObject.hostgal_zphot",
                 "diaObject.hostgal_zphot_err",
-                "diaObject.hostgal_snsep"
+                "diaObject.hostgal_snsep",
             ],
             "type": "ML",
             "colname": "slsn_with_md",
@@ -71,10 +69,10 @@ def load_rubin_modules(module_name="") -> dict:
                 "diaObject.z_final",
                 "diaObject.z_final_err",
                 "diaObject.hostgal_zphot",
-                "diaObject.hostgal_zphot_err"
+                "diaObject.hostgal_zphot_err",
             ],
             "type": "ML",
-            "colname": "cats_preds_md"
+            "colname": "cats_preds_md",
         },
         "CATS_nomd": {
             "processor": predict_nn,
@@ -85,8 +83,8 @@ def load_rubin_modules(module_name="") -> dict:
                 "cfilterName",
             ],
             "type": "ML",
-            "colname": "cats_preds_nomd"
-        }
+            "colname": "cats_preds_nomd",
+        },
     }
 
     if module_name != "":

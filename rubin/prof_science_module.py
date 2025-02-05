@@ -62,9 +62,7 @@ if __name__ == "__main__":
         pdf = df.select(module_prop["cols"]).toPandas()
 
         t0 = time.time()
-        out = module_prop["processor"].__wrapped__(
-            *[pdf[col] for col in pdf.columns]
-        )
+        out = module_prop["processor"].__wrapped__(*[pdf[col] for col in pdf.columns])
 
         # Raw throughput (single core)
         _LOG.info(

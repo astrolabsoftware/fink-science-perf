@@ -148,18 +148,19 @@ def concat(df):
         df = concat_col(df, colname, prefix=prefix)
     return df
 
+
 def concat_rubin(df):
     """Retrieve time-series information."""
     # should include all necessary aggregation
-    what = [
-        "midPointTai",
-        "psFlux",
-        "psFluxErr",
-        "filterName"
-    ]
+    what = ["midPointTai", "psFlux", "psFluxErr", "filterName"]
 
     prefix = "c"
     for colname in what:
-        df = concat_col(df, colname, prefix=prefix, current="diaSource", history="prvDiaForcedSources")
+        df = concat_col(
+            df,
+            colname,
+            prefix=prefix,
+            current="diaSource",
+            history="prvDiaForcedSources",
+        )
     return df
-
