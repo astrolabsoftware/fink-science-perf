@@ -433,14 +433,14 @@ if __name__ == "__main__":
                 if module_name == "Feature extraction":
                     # scalar udf
                     for _, row in pdf.iterrows():
-                        out = module_prop["processor"].__wrapped__(
-                            *[row[k] for k in pdf.columns]
-                        )
+                        out = module_prop["processor"].__wrapped__(*[
+                            row[k] for k in pdf.columns
+                        ])
                 else:
                     # pandas udf (vectorised)
-                    out = module_prop["processor"].__wrapped__(
-                        *[pdf[col] for col in pdf.columns]
-                    )
+                    out = module_prop["processor"].__wrapped__(*[
+                        pdf[col] for col in pdf.columns
+                    ])
 
                 # Raw throughput (single core)
                 throughput.append(len(pdf) / (time.time() - t0))

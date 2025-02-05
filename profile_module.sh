@@ -2,8 +2,13 @@
 
 NAME=""
 DATAFOLDER=""
+SURVEY=""
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    -survey)
+	SURVEY="$2"
+	shift 2
+	;;
     -name)
         NAME="$2"
         shift 2
@@ -27,7 +32,13 @@ if [[ $DATAFOLDER == "" ]]; then
   exit
 fi
 
-kernprof -l --outfile "${OUTPROF// /_}" ztf/prof_science_module.py \
+if [[ $SURVEY == "" ]]; then
+  echo "You need to specify a survey with the argument -survey"
+  echo "Available: ztf, rubin"
+  exit
+fi
+
+kernprof -l --outfile "${OUTPROF// /_}" ${SURVEY}/prof_science_module.py \
 	-module_name="$NAME" \
 	-datafolder=$DATAFOLDER
 
