@@ -26,6 +26,7 @@ from fink_science.anomaly_detection.processor import anomaly_score
 from fink_science.fast_transient_rate.processor import magnitude_rate
 from fink_science.ad_features.processor import extract_features_ad
 from fink_science.hostless_detection.processor import run_potential_hostless
+from fink_science.ssoft.processor import estimate_sso_params_spark
 
 import logging
 
@@ -190,6 +191,24 @@ def load_ztf_modules(module_name="") -> dict:
             ],
             "type": "ml",
             "colname": "rf_snia_vs_nonia",
+        },
+        "SSOFT": {
+            "processor": estimate_sso_params_spark,
+            "cols": [
+                "ssnamenr",
+                "cmagpsf",
+                "csigmapsf",
+                "cjd",
+                "cfid",
+                "cra",
+                "cdec",
+                F.lit("rest").alias("method"),
+                F.lit("SSHG1G2").alias("model"),
+                F.lit("auto").alias("sb_method"),
+                F.lit(42).alias("uid"),
+            ],
+            "type": "agg",
+            "colname": "ssoft_params",
         },
     }
 
