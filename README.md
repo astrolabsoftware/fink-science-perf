@@ -211,6 +211,12 @@ In this example, we started with 1,000 alerts, and the first lines were called 1
 But then we have a branch (`if is_hostless_candidate:`), and the costly function is 
 actually only called 30 times.
 
+### SSOFT
+
+The case of the SSOFT is different from the rest, as it does not uses raw alerts as input. Instead, profile it using the test data in `fink-science` (`fink-science/fink_science/data/alerts/sso_aggregated_2024.09_test_sample.parquet`).
+
+Note that the SSOFT is not profiled with other modules when you profile all science modules. It can only be tested individually.
+
 ## Performance checks
 
 ### Timing science modules
