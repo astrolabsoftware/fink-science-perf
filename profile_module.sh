@@ -17,6 +17,14 @@ while [ "$#" -gt 0 ]; do
 	DATAFOLDER="$2"
 	shift 2
 	;;
+    -*)
+      echo "unknown option: $1" >&2
+      exit 1
+      ;;
+    *)
+      echo "unknown argument: $1" >&2
+      exit 1
+      ;;
   esac
 done
 
