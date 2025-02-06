@@ -53,11 +53,21 @@ if __name__ == "__main__":
 
     modules = load_ztf_modules(module_name=args.module_name)
 
-    df = spark.read.format("parquet").load(args.datafolder)
-    df = concat(df)
+    if "SSOFT" in modules and len(modules.keys()) > 1:
+        # SSOFT cannot be processed with others
+        # Remove it from the list
+        modules.pop("SSOFT")
 
     for module_name, module_prop in modules.items():
         _LOG.info("Profiling {}".format(module_name))
+
+        df = spark.read.format("parquet").load(args.datafolder)
+
+        if module_name != "SSOFT":
+            # SSOFT data is different from data transfer
+            # It uses aggregated data in
+            # fink-science/fink_science/data/alerts/sso_aggregated_2024.09_test_sample.parquet
+            df = concat(df)
 
         # Recompute lc_features for anomaly
         if module_name == "Anomaly":
