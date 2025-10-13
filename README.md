@@ -56,9 +56,9 @@ Fire a docker container with all Fink dependencies installed:
 
 ```bash
 # 2.3GB compressed
-docker pull julienpeloton/fink-ci:latest
+docker pull julienpeloton/fink-ci-ztf:latest
 
-docker run -t -i --rm julienpeloton/fink-ci:latest bash
+docker run -t -i --rm julienpeloton/fink-ci-ztf:latest bash
 ```
 
 ### Data
