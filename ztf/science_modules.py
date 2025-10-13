@@ -16,17 +16,28 @@
 
 import pyspark.sql.functions as F
 
-from fink_science.microlensing.processor import mulens
-from fink_science.asteroids.processor import roid_catcher
-from fink_science.snn.processor import snn_ia
-from fink_science.random_forest_snia.processor import rfscore_sigmoid_full
-from fink_science.xmatch.processor import cdsxmatch, crossmatch_other_catalog
-from fink_science.kilonova.processor import knscore
-from fink_science.anomaly_detection.processor import anomaly_score
-from fink_science.fast_transient_rate.processor import magnitude_rate
-from fink_science.ad_features.processor import extract_features_ad
-from fink_science.hostless_detection.processor import run_potential_hostless
-from fink_science.ssoft.processor import estimate_sso_params_spark
+#from fink_science.ztf.microlensing.processor import mulens
+#from fink_science.ztf.asteroids.processor import roid_catcher
+#from fink_science.ztf.snn.processor import snn_ia
+#from fink_science.ztf.random_forest_snia.processor import rfscore_sigmoid_full
+#from fink_science.ztf.xmatch.processor import cdsxmatch, crossmatch_other_catalog
+#from fink_science.ztf.kilonova.processor import knscore
+#from fink_science.ztf.anomaly_detection.processor import anomaly_score
+#from fink_science.ztf.fast_transient_rate.processor import magnitude_rate
+#from fink_science.ztf.ad_features.processor import extract_features_ad
+#from fink_science.ztf.hostless_detection.processor import run_potential_hostless
+mulens = lambda x: x
+roid_catcher = lambda x: x
+snn_ia = lambda x: x
+rfscore_sigmoid_full = lambda x: x
+cdsxmatch = lambda x: x
+crossmatch_other_catalog = lambda x: x
+knscore = lambda x: x
+anomaly_score = lambda x: x
+magnitude_rate = lambda x: x
+extract_features_ad = lambda x: x
+run_potential_hostless = lambda x: x
+from fink_science.ztf.ssoft.processor import estimate_sso_params_spark
 
 import logging
 
