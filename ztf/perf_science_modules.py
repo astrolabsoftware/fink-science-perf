@@ -118,7 +118,8 @@ if __name__ == "__main__":
 
             t0 = time.time()
             pdf = (
-                df.withColumn("tmp", module_prop["processor"](*df.columns))
+                df
+                .withColumn("tmp", module_prop["processor"](*df.columns))
                 .select("tmp")
                 .toPandas()
             )

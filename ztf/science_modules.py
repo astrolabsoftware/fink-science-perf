@@ -16,28 +16,17 @@
 
 import pyspark.sql.functions as F
 
-#from fink_science.ztf.microlensing.processor import mulens
-#from fink_science.ztf.asteroids.processor import roid_catcher
-#from fink_science.ztf.snn.processor import snn_ia
-#from fink_science.ztf.random_forest_snia.processor import rfscore_sigmoid_full
-#from fink_science.ztf.xmatch.processor import cdsxmatch, crossmatch_other_catalog
-#from fink_science.ztf.kilonova.processor import knscore
-#from fink_science.ztf.anomaly_detection.processor import anomaly_score
-#from fink_science.ztf.fast_transient_rate.processor import magnitude_rate
-#from fink_science.ztf.ad_features.processor import extract_features_ad
-#from fink_science.ztf.hostless_detection.processor import run_potential_hostless
-mulens = lambda x: x
-roid_catcher = lambda x: x
-snn_ia = lambda x: x
-rfscore_sigmoid_full = lambda x: x
-cdsxmatch = lambda x: x
-crossmatch_other_catalog = lambda x: x
-knscore = lambda x: x
-anomaly_score = lambda x: x
-magnitude_rate = lambda x: x
-extract_features_ad = lambda x: x
-run_potential_hostless = lambda x: x
-from fink_science.ztf.ssoft.processor import estimate_sso_params_spark
+from fink_science.ztf.microlensing.processor import mulens
+from fink_science.ztf.asteroids.processor import roid_catcher
+from fink_science.ztf.snn.processor import snn_ia
+from fink_science.ztf.random_forest_snia.processor import rfscore_sigmoid_full
+from fink_science.ztf.xmatch.processor import cdsxmatch, crossmatch_other_catalog
+from fink_science.ztf.kilonova.processor import knscore
+from fink_science.ztf.anomaly_detection.processor import anomaly_score
+from fink_science.ztf.fast_transient_rate.processor import magnitude_rate
+from fink_science.ztf.ad_features.processor import extract_features_ad
+from fink_science.ztf.hostless_detection.processor import run_potential_hostless
+from fink_science.ztf.ssoft.processor import extract_ssoft_parameters
 
 import logging
 
@@ -204,7 +193,7 @@ def load_ztf_modules(module_name="") -> dict:
             "colname": "rf_snia_vs_nonia",
         },
         "SSOFT": {
-            "processor": estimate_sso_params_spark,
+            "processor": extract_ssoft_parameters,
             "cols": [
                 "ssnamenr",
                 "cmagpsf",
@@ -213,10 +202,13 @@ def load_ztf_modules(module_name="") -> dict:
                 "cfid",
                 "cra",
                 "cdec",
-                F.lit("rest").alias("method"),
-                F.lit("SSHG1G2").alias("model"),
-                F.lit("auto").alias("sb_method"),
-                F.lit(42).alias("uid"),
+                "RA",
+                "DEC",
+                "Phase",
+                "Dobs",
+                "Dhelio",
+                F.lit("nifty"),
+                F.lit("SOCCA").alias("model"),
             ],
             "type": "agg",
             "colname": "ssoft_params",
