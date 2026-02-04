@@ -152,7 +152,7 @@ def concat(df):
 def concat_rubin(df):
     """Retrieve time-series information."""
     # should include all necessary aggregation
-    what = ["midPointTai", "psFlux", "psFluxErr", "filterName"]
+    what = ["midpointMjdTai", "psfFlux", "psfFluxErr", "band"]
 
     prefix = "c"
     for colname in what:
@@ -161,6 +161,6 @@ def concat_rubin(df):
             colname,
             prefix=prefix,
             current="diaSource",
-            history="prvDiaForcedSources",
+            history="prvDiaSources",
         )
     return df

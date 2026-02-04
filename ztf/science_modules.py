@@ -15,21 +15,24 @@
 """Science modules in Fink"""
 
 import pyspark.sql.functions as F
-
-from fink_science.ztf.microlensing.processor import mulens
-from fink_science.ztf.asteroids.processor import roid_catcher
-from fink_science.ztf.snn.processor import snn_ia
-from fink_science.ztf.random_forest_snia.processor import rfscore_sigmoid_full
-from fink_science.ztf.xmatch.processor import cdsxmatch, crossmatch_other_catalog
-from fink_science.ztf.kilonova.processor import knscore
-from fink_science.ztf.anomaly_detection.processor import anomaly_score
-from fink_science.ztf.fast_transient_rate.processor import magnitude_rate
-from fink_science.ztf.ad_features.processor import extract_features_ad
-from fink_science.ztf.hostless_detection.processor import run_potential_hostless
-from fink_science.ztf.ssoft.processor import extract_ssoft_parameters
-
 import logging
 
+try:
+    from fink_science.ztf.microlensing.processor import mulens
+    from fink_science.ztf.asteroids.processor import roid_catcher
+    from fink_science.ztf.snn.processor import snn_ia
+    from fink_science.ztf.random_forest_snia.processor import rfscore_sigmoid_full
+    from fink_science.ztf.xmatch.processor import cdsxmatch, crossmatch_other_catalog
+    from fink_science.ztf.kilonova.processor import knscore
+    from fink_science.ztf.anomaly_detection.processor import anomaly_score
+    from fink_science.ztf.fast_transient_rate.processor import magnitude_rate
+    from fink_science.ztf.ad_features.processor import extract_features_ad
+
+    # from fink_science.ztf.hostless_detection.processor import run_potential_hostless
+    from fink_science.ztf.ssoft.processor import extract_ssoft_parameters
+except ImportError as e:
+    _LOG = logging.getLogger(__name__)
+    _LOG.warning(e)
 
 _LOG = logging.getLogger(__name__)
 
@@ -37,17 +40,6 @@ _LOG = logging.getLogger(__name__)
 def load_ztf_modules(module_name="") -> dict:
     """Configuration with all science modules."""
     modules = {
-        "Hostless": {
-            "processor": run_potential_hostless,
-            "cols": [
-                "cmagpsf",
-                F.col("cutoutScience.stampData").alias("cutoutScience"),
-                F.col("cutoutTemplate.stampData").alias("cutoutTemplate"),
-                "objectId",
-            ],
-            "type": "feature",
-            "colname": "hostless",
-        },
         "CDS xmatch (SIMBAD)": {
             "processor": cdsxmatch,
             "cols": [

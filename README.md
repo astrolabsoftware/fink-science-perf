@@ -2,80 +2,23 @@
 
 This repository contains scripts to perform the profiling and performance checks of [fink-science](https://github.com/astrolabsoftware/fink-science) modules.
 
-## Online profiling
-
-In order to profile user-defined functions in fink-science, you can use this repository:
-1. clone (or fork) this repository
-2. create a new branch
-3. uncomment the section `Install custom fink-science version` in the [action](.github/workflows/test.yml) and install your branch with your new science module:
-
-```yaml
-- name: Install custom fink-science version
-  run: |
-   # remove fink-science
-   pip uninstall -y fink-science
-   # change to your branch
-   pip install git+https://github.com/astrolabsoftware/fink-science.git@issue/397/profiling
-```
-
-4. in `/path/to/fink-science-perf`, update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py) with your new science module:
-
-```diff
-@@ -98,13 +96,21 @@ def load_ztf_modules(module_name="") -> dict:
-             'cols': ['cjd', 'cfid', 'cmagpsf', 'csigmapsf', 'cdsxmatch', F.col('candidate.ndethist')],
-             'type': 'ml',
-             'colname': 'rf_snia_vs_nonia'
-+        },
-+        {
-+            'My New module': {
-+                'processor': name_of_the_function_in_fink_science,
-+                'cols': ['list', 'of', 'required', 'columns'],
-+                'type': 'xmatch or ml or feature',
-+                'colname': 'the name of the new column'
-+            }
-         }
-     }
-```
-
-
-5. Push the code. You can inspect the results on the action log: 
-
-![artifact_log](ztf/static/artifact_log.png)
-
-or you can also download the artifact from the action page:
- 
-![artifact_download](ztf/static/artifact_download.png) 
-
 ## Manual profiling
-
-You can also do the profiling directly on your computer.
-
-### Docker
 
 Fire a docker container with all Fink dependencies installed:
 
 ```bash
-# 2.3GB compressed
-docker pull julienpeloton/fink-ci-ztf:latest
+# 3GB compressed
+docker pull gitlab-registry.in2p3.fr/astrolabsoftware/fink/fink-deps-sentinel-rubin:latest
 
-docker run -t -i --rm julienpeloton/fink-ci-ztf:latest bash
+# Assuming you are in /path/to/fink-science-perf on the host
+docker run -t -i --rm -v \
+  $PWD:/workspace/fink-science-perf \
+  gitlab-registry.in2p3.fr/astrolabsoftware/fink/fink-deps-sentinel-rubin:latest bash
 ```
 
 ### Data
 
-#### Direct download
-
-You can simply download a sample of data (ZTF alerts, July 12 2024):
-
-```bash
-curl https://box.in2p3.fr/s/KFJ2pWDqNB85WNn/download --output ftransfer_ztf_2024-07-24_50931.tar.gz
-tar -xvf ftransfer_ztf_2024-07-24_50931.tar.gz
-```
-
-#### Fink data transfer
-
-But the best is to use the [Data Transfer](https://fink-portal.org/download) service to get tailored data for your test.
-Make sure you have an account to use the [fink-client](https://github.com/astrolabsoftware/fink-client). Install it
+Use the [Data Transfer](https://fink-portal.org/download) service to get tailored data for your test. Make sure you have an account to use the [fink-client](https://github.com/astrolabsoftware/fink-client). Install it
 and register your credentials on the container:
 
 ```bash
@@ -83,10 +26,10 @@ and register your credentials on the container:
 pip install fink-client
 
 # register using your credentials
-fink_client_register ... 
+fink_client_register -survey lsst ... 
 ```
 
-Trigger a job on the Data Transfer service and download data in your container (July 12 2024 is good to start, only 17k alerts):
+Trigger a job on the Data Transfer service and download data in your container:
 
 ```bash
 # Change accordingly
@@ -112,11 +55,13 @@ pip uninstall fink-science
 and clone the targeted version:
 
 ```bash
-# e.g. modified version of fink-science
-# corresponding to PR https://github.com/astrolabsoftware/fink-science/pull/396
-git clone https://github.com/utthishtastro/fink-science.git
+git clone https://github.com/astrolabsoftware/fink-science.git
 cd fink-science
-git checkout hostless_detection
+export PYTHONPATH=$PYTHONPATH:$PWD
+
+# in case you need a specific fork
+git checkout -b <branch_name> master
+git pull https://github.com/erusseil/fink-science.git master
 ```
 
 In case the code is not instrumented, add necessary decorators:
@@ -135,7 +80,7 @@ and install the code:
 pip install .
 ```
 
-and finally clone this repository and update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py):
+and finally update the list of science modules in [ztf/science_modules.py](ztf/science_modules.py):
 
 ```diff
 @@ -98,13 +96,21 @@ def load_ztf_modules(module_name="") -> dict:

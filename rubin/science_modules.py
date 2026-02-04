@@ -1,4 +1,4 @@
-# Copyright 2024 AstroLab Software
+# Copyright 2024-2026 AstroLab Software
 # Author: Julien Peloton
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Science modules in Fink"""
+"""Science modules in Fink/LSST"""
 
-from fink_science.slsn.processor import slsn_elasticc_with_md
-from fink_science.slsn.processor import slsn_elasticc_no_md
-from fink_science.cats.processor import predict_nn
+import pyspark.sql.functions as F
+from pyspark.sql import SparkSession
+
+from fink_science.rubin.cats.processor import predict_nn
+from fink_science.rubin.snn.processor import snn_ia_elasticc
+from fink_science.rubin.random_forest_snia.processor import (
+    rfscore_rainbow_elasticc_nometa,
+)
+from fink_science.rubin.hostless_detection.processor import run_potential_hostless
 
 import logging
 
+spark = SparkSession.builder.master("local[*]").getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 _LOG = logging.getLogger(__name__)
 
@@ -27,63 +35,50 @@ _LOG = logging.getLogger(__name__)
 def load_rubin_modules(module_name="") -> dict:
     """Configuration with all science modules."""
     modules = {
-        "SLSN (with metadata)": {
-            "processor": slsn_elasticc_with_md,
+        "hostless": {
+            "processor": run_potential_hostless,
             "cols": [
-                "diaObject.diaObjectId",
-                "cmidPointTai",
-                "cpsFlux",
-                "cpsFluxErr",
-                "cfilterName",
-                "diaSource.ra",
-                "diaSource.decl",
-                "diaObject.hostgal_zphot",
-                "diaObject.hostgal_zphot_err",
-                "diaObject.hostgal_snsep",
+                F.col("cutoutScience"),
+                F.col("cutoutTemplate"),
+                F.col("ssSource.ssObjectId"),
+            ],
+            "type": "feature",
+            "colname": "hostless",
+        },
+        "snnSnVsOthers": {
+            "processor": snn_ia_elasticc,
+            "cols": [
+                "diaSource.diaSourceId",
+                "cmidpointMjdTai",
+                "cband",
+                "cpsfFlux",
+                "cpsfFluxErr",
+                F.lit("elasticc_binary_broad/SN_vs_other"),
             ],
             "type": "ML",
-            "colname": "slsn_with_md",
+            "colname": "snnSnVsOthers_score",
         },
-        "SLSN (no metadata)": {
-            "processor": slsn_elasticc_no_md,
+        "earlySNIa": {
+            "processor": rfscore_rainbow_elasticc_nometa,
             "cols": [
-                "diaObject.diaObjectId",
-                "cmidPointTai",
-                "cpsFlux",
-                "cpsFluxErr",
-                "cfilterName",
-                "diaSource.ra",
-                "diaSource.decl",
+                "cmidpointMjdTai",
+                "cband",
+                "cpsfFlux",
+                "cpsfFluxErr",
             ],
             "type": "ML",
-            "colname": "slsn_no_md",
+            "colname": "earlySNIa_score",
         },
-        "CATS_md": {
+        "CATS": {
             "processor": predict_nn,
             "cols": [
-                "cmidPointTai",
-                "cpsFlux",
-                "cpsFluxErr",
-                "cfilterName",
-                "diaObject.mwebv",
-                "diaObject.z_final",
-                "diaObject.z_final_err",
-                "diaObject.hostgal_zphot",
-                "diaObject.hostgal_zphot_err",
+                "cmidpointMjdTai",
+                "cpsfFlux",
+                "cpsfFluxErr",
+                "cband",
             ],
             "type": "ML",
-            "colname": "cats_preds_md",
-        },
-        "CATS_nomd": {
-            "processor": predict_nn,
-            "cols": [
-                "cmidPointTai",
-                "cpsFlux",
-                "cpsFluxErr",
-                "cfilterName",
-            ],
-            "type": "ML",
-            "colname": "cats_preds_nomd",
+            "colname": "cats_broad_array_prob",
         },
     }
 
