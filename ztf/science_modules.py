@@ -92,7 +92,7 @@ def load_ztf_modules(module_name="") -> dict:
             "type": "ml",
             "colname": "rf_kn_vs_nonkn",
         },
-        "Anomaly": {"processor": anomaly_score, "cols": ["lc_features"]},
+        #"Anomaly": {"processor": anomaly_score, "cols": ["lc_features"]},
         "Fast transient": {
             "processor": magnitude_rate,
             "cols": [
