@@ -24,7 +24,8 @@ try:
     from fink_science.ztf.random_forest_snia.processor import rfscore_sigmoid_full
     from fink_science.ztf.xmatch.processor import cdsxmatch, crossmatch_other_catalog
     from fink_science.ztf.kilonova.processor import knscore
-    from fink_science.ztf.anomaly_detection.processor import anomaly_score
+
+    # from fink_science.ztf.anomaly_detection.processor import anomaly_score
     from fink_science.ztf.fast_transient_rate.processor import magnitude_rate
     from fink_science.ztf.ad_features.processor import extract_features_ad
 
@@ -92,7 +93,7 @@ def load_ztf_modules(module_name="") -> dict:
             "type": "ml",
             "colname": "rf_kn_vs_nonkn",
         },
-        #"Anomaly": {"processor": anomaly_score, "cols": ["lc_features"]},
+        # "Anomaly": {"processor": anomaly_score, "cols": ["lc_features"]},
         "Fast transient": {
             "processor": magnitude_rate,
             "cols": [
