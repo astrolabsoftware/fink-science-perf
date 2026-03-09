@@ -4,16 +4,16 @@ This repository contains scripts to perform the profiling and performance checks
 
 ## Manual profiling
 
-Fire a docker container with all Fink dependencies installed:
+Fire a docker container with all Fink dependencies installed (replace with `ztf` with `rubin` if you need to test on LSST):
 
 ```bash
 # 3GB compressed
-docker pull gitlab-registry.in2p3.fr/astrolabsoftware/fink/fink-deps-sentinel-rubin:latest
+docker pull gitlab-registry.in2p3.fr/astrolabsoftware/fink/fink-deps-sentinel-ztf:latest
 
 # Assuming you are in /path/to/fink-science-perf on the host
 docker run -t -i --rm -v \
   $PWD:/workspace/fink-science-perf \
-  gitlab-registry.in2p3.fr/astrolabsoftware/fink/fink-deps-sentinel-rubin:latest bash
+  gitlab-registry.in2p3.fr/astrolabsoftware/fink/fink-deps-sentinel-ztf:latest bash
 ```
 
 ### Data
