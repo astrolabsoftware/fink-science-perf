@@ -164,3 +164,13 @@ def concat_rubin(df):
             history="prvDiaSources",
         )
     return df
+
+class FakeSparkFunctions(object):
+    """Dummy Spark functions"""
+    def lit(self, inp):
+        return FakeSparkFunctions()
+    def col(self, inp):
+        return FakeSparkFunctions()
+    def alias(self, inp):
+        return "FakeSparkFunctions"
+

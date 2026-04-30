@@ -13,8 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Science modules in Fink"""
+from pyspark import SparkContext
+from ztf.utils import FakeSparkFunctions
 
-import pyspark.sql.functions as F
+if SparkContext._active_spark_context is None:
+    F = FakeSparkFunctions()
+else:
+    import pyspark.sql.functions as F
 import logging
 
 try:
