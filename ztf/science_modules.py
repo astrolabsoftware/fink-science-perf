@@ -15,11 +15,6 @@
 """Science modules in Fink"""
 from pyspark import SparkContext
 from ztf.utils import FakeSparkFunctions
-
-if SparkContext._active_spark_context is None:
-    F = FakeSparkFunctions()
-else:
-    import pyspark.sql.functions as F
 import logging
 
 try:
@@ -45,6 +40,10 @@ _LOG = logging.getLogger(__name__)
 
 def load_ztf_modules(module_name="") -> dict:
     """Configuration with all science modules."""
+    if SparkContext._active_spark_context is None:
+        F = FakeSparkFunctions()
+    else:
+        import pyspark.sql.functions as F
     modules = {
         "CDS xmatch (SIMBAD)": {
             "processor": cdsxmatch,

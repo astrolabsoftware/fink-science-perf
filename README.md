@@ -4,16 +4,25 @@ This repository contains scripts to perform the profiling and performance checks
 
 ## Manual profiling
 
-Fire a docker container with all Fink dependencies installed (replace with `ztf` with `rubin` if you need to test on LSST):
+Fire a docker container with all Fink dependencies installed (replace `ztf` with `rubin` if you need to test on LSST):
 
 ```bash
 # 3GB compressed
 docker pull gitlab-registry.in2p3.fr/astrolabsoftware/fink/fink-deps-sentinel-ztf:latest
 
-# Assuming you are in /path/to/fink-science-perf on the host
-docker run -t -i --rm -v \
-  $PWD:/workspace/fink-science-perf \
-  gitlab-registry.in2p3.fr/astrolabsoftware/fink/fink-deps-sentinel-ztf:latest bash
+# Launch container from the fink-science-perf directory.
+# Use -s to mount a local fink-science checkout (overrides the pip-installed version).
+# Use -m to mount additional packages (colon-separated list of paths).
+./run_container.sh \
+  -s $HOME/src/github.com/astrolabsoftware/fink-science \
+  -m $HOME/src/github.com/emilleishida/fink_sn_activelearning
+```
+
+The script mounts `fink-science-perf` automatically, sets `PYTHONPATH`, and pip-installs
+mounted packages in editable mode. Once inside the container, navigate to the workspace:
+
+```bash
+cd /workspace/fink-science-perf
 ```
 
 ### Data

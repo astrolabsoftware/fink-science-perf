@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -e
+set -ex
 
 SINFO="\xF0\x9F\x9B\x88"
 SERROR="\xE2\x9D\x8C"
