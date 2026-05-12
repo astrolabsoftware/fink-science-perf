@@ -72,7 +72,7 @@ cd /workspace/fink-science-perf
 
 ```bash
 # Check available science modules
-./profile_module.sh -survey ztf --list_modules
+./bench_module.sh --survey ztf --list-modules
 ```
 
 Expected output (with warnings that can be ignored):
@@ -85,14 +85,14 @@ Expected output (with warnings that can be ignored):
 ### List All Available Modules
 
 ```bash
-./profile_module.sh -survey ztf --list_modules
+./bench_module.sh --survey ztf --list-modules
 ```
 
 ### Profile a Specific Module
 
 ```bash
 # Data must be under /workspace/fink-science-perf/ (or any mounted path)
-./profile_module.sh -survey ztf -name "Early SN Ia" -d /workspace/fink-science-perf/ftransfer_ztf_2026-04-28_434189/
+./bench_module.sh -s ztf -n "Early SN Ia" -d /workspace/fink-science-perf/ftransfer_ztf_2026-04-28_434189/
 ```
 
 Expected output ends with the throughput and a profiling summary, e.g.:
@@ -106,13 +106,13 @@ python -m line_profiler -rmt "profiling_Early_SN_Ia.lprof"
 ### Get Help
 
 ```bash
-./profile_module.sh -h
+./bench_module.sh --help
 ```
 
 ### Check fink-science Version
 
 ```bash
-./profile_module.sh --version
+./bench_module.sh --version
 ```
 
 ## Next Steps

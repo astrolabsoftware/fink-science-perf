@@ -59,7 +59,7 @@ if __name__ == "__main__":
         modules.pop("SSOFT")
 
     for module_name, module_prop in modules.items():
-        _LOG.info("Profiling {}".format(module_name))
+        _LOG.info("Benchmarking {}".format(module_name))
 
         df = spark.read.format("parquet").load(args.datafolder)
 
@@ -95,6 +95,7 @@ if __name__ == "__main__":
         _LOG.info(
             "Throughput: {:.1f} alert/second".format(len(pdf) / (time.time() - t0))
         )
+        print(out)
 
         # In this case, a zero probability means the
         # code did not run fully (quality cuts). So we

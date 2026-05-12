@@ -32,16 +32,19 @@ The codebase is organized into two main survey-specific directories:
 
 ## Common Commands
 
-### Profiling a Single Module
+### Benchmarking and Profiling
 ```bash
 # List available modules
-./profile_module.sh -survey ztf --list_modules
+./bench_module.sh --survey ztf --list-modules
 
-# Profile specific module
-./profile_module.sh -survey ztf -name "Early SN Ia" -d /path/to/data
+# Benchmark a specific module (throughput only)
+./bench_module.sh -s ztf -n "Early SN Ia" -d /path/to/data
 
-# Profile all modules
-./profile_module.sh -survey ztf -d /path/to/data
+# Profile a module line by line
+./bench_module.sh -s ztf -n "Early SN Ia" -d /path/to/data --profile
+
+# Benchmark all modules
+./bench_module.sh -s ztf -d /path/to/data
 ```
 
 ### Performance Testing
@@ -97,7 +100,7 @@ When profiling new fink-science code:
 3. Add line_profiler decorators: `@profile`
 4. Install: `pip install .`
 5. Update module configuration in `ztf/science_modules.py` or `rubin/science_modules.py`
-6. Run profiling with `./profile_module.sh`
+6. Run profiling with `./bench_module.sh --profile`
 
 ## Performance Analysis
 

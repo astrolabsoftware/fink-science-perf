@@ -112,7 +112,7 @@ and profile your code with:
 
 ```bash
 # Change arguments accordingly
-./profile_module.sh -survey ztf -name 'My New module' -d /data/$TOPIC
+./bench_module.sh -s ztf -n 'My New module' -d /data/$TOPIC
 ```
 
 Dependending on how many decorators you put in the code,
