@@ -99,7 +99,7 @@ if [[ -z $SURVEY ]]; then
 fi
 
 if [[ ${LIST_MODULES} == true ]]; then
-  python -c "from ${SURVEY}.science_modules import load_${SURVEY}_modules; print(list(load_${SURVEY}_modules().keys()))"
+  python -c "from ${SURVEY}.science_modules import MODULE_NAMES; print(MODULE_NAMES)"
   exit 0
 fi
 

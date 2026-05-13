@@ -15,7 +15,6 @@
 """Science modules in Fink/LSST"""
 
 import pyspark.sql.functions as F
-from pyspark.sql import SparkSession
 
 from fink_science.rubin.cats.processor import predict_nn
 from fink_science.rubin.snn.processor import snn_ia_elasticc
@@ -24,30 +23,31 @@ from fink_science.rubin.random_forest_snia.processor import (
 )
 from fink_science.rubin.hostless_detection.processor import run_potential_hostless
 
+from ztf.utils import ScienceModule
+
 import logging
 
-spark = SparkSession.builder.master("local[*]").getOrCreate()
-spark.sparkContext.setLogLevel("ERROR")
-
 _LOG = logging.getLogger(__name__)
+
+MODULE_NAMES = ["hostless", "snnSnVsOthers", "earlySNIa", "CATS"]
 
 
 def load_rubin_modules(module_name="") -> dict:
     """Configuration with all science modules."""
     modules = {
-        "hostless": {
-            "processor": run_potential_hostless,
-            "cols": [
+        "hostless": ScienceModule(
+            processor=run_potential_hostless,
+            cols=[
                 F.col("cutoutScience"),
                 F.col("cutoutTemplate"),
                 F.col("ssSource.ssObjectId"),
             ],
-            "type": "feature",
-            "colname": "hostless",
-        },
-        "snnSnVsOthers": {
-            "processor": snn_ia_elasticc,
-            "cols": [
+            kind="feature",
+            colname="hostless",
+        ),
+        "snnSnVsOthers": ScienceModule(
+            processor=snn_ia_elasticc,
+            cols=[
                 "diaSource.diaSourceId",
                 "cmidpointMjdTai",
                 "cband",
@@ -55,31 +55,31 @@ def load_rubin_modules(module_name="") -> dict:
                 "cpsfFluxErr",
                 F.lit("elasticc_binary_broad/SN_vs_other"),
             ],
-            "type": "ML",
-            "colname": "snnSnVsOthers_score",
-        },
-        "earlySNIa": {
-            "processor": rfscore_rainbow_elasticc_nometa,
-            "cols": [
+            kind="ML",
+            colname="snnSnVsOthers_score",
+        ),
+        "earlySNIa": ScienceModule(
+            processor=rfscore_rainbow_elasticc_nometa,
+            cols=[
                 "cmidpointMjdTai",
                 "cband",
                 "cpsfFlux",
                 "cpsfFluxErr",
             ],
-            "type": "ML",
-            "colname": "earlySNIa_score",
-        },
-        "CATS": {
-            "processor": predict_nn,
-            "cols": [
+            kind="ML",
+            colname="earlySNIa_score",
+        ),
+        "CATS": ScienceModule(
+            processor=predict_nn,
+            cols=[
                 "cmidpointMjdTai",
                 "cpsfFlux",
                 "cpsfFluxErr",
                 "cband",
             ],
-            "type": "ML",
-            "colname": "cats_broad_array_prob",
-        },
+            kind="ML",
+            colname="cats_broad_array_prob",
+        ),
     }
 
     if module_name != "":

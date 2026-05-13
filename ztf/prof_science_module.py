@@ -72,24 +72,15 @@ if __name__ == "__main__":
         # Recompute lc_features for anomaly
         if module_name == "Anomaly":
             df = df.withColumn(
-                modules["Feature extraction"]["colname"],
-                modules["Feature extraction"]["processor"](
-                    *modules["Feature extraction"]["cols"]
+                modules["Feature extraction"].colname,
+                modules["Feature extraction"].processor(
+                    *modules["Feature extraction"].cols
                 ),
             )
 
-        pdf = df.select(module_prop["cols"]).toPandas()
+        pdf = df.select(module_prop.cols).toPandas()
         t0 = time.time()
-        if module_name == "Feature extraction":
-            # standard UDF
-            for _, row in pdf.iterrows():
-                out = module_prop["processor"].__wrapped__(*[
-                    row[k] for k in pdf.columns
-                ])
-        else:
-            out = module_prop["processor"].__wrapped__(*[
-                pdf[col] for col in pdf.columns
-            ])
+        out = module_prop.bench(pdf)
 
         # Raw throughput (single core)
         _LOG.info(
@@ -100,6 +91,6 @@ if __name__ == "__main__":
         # In this case, a zero probability means the
         # code did not run fully (quality cuts). So we
         # want to know the proportion of alerts fully classified (effective throughput)
-        # _LOG.info("{:.6f}% objects with p > 0".format(len(out[out > 0]) / len(out) * 100))
+        _LOG.info("{:.6f}% objects with p > 0".format(len(out[out > 0]) / len(out) * 100))
 
     spark.stop()

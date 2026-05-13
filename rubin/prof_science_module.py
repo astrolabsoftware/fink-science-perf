@@ -59,10 +59,10 @@ if __name__ == "__main__":
     for module_name, module_prop in modules.items():
         _LOG.info("Profiling {}".format(module_name))
 
-        pdf = df.select(module_prop["cols"]).toPandas()
+        pdf = df.select(module_prop.cols).toPandas()
 
         t0 = time.time()
-        out = module_prop["processor"].__wrapped__(*[pdf[col] for col in pdf.columns])
+        out = module_prop.bench(pdf)
 
         # Raw throughput (single core)
         _LOG.info(

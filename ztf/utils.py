@@ -20,6 +20,9 @@ from pyspark.conf import SparkConf
 import numpy as np
 import pandas as pd
 
+from dataclasses import dataclass
+from typing import Callable, Any
+
 from fink_science import __version__
 from fink_utils.spark.utils import concat_col
 
@@ -173,4 +176,21 @@ class FakeSparkFunctions(object):
         return FakeSparkFunctions()
     def alias(self, inp):
         return "FakeSparkFunctions"
+
+
+@dataclass
+class ScienceModule:
+    processor: Callable
+    cols: list
+    kind: str
+    colname: str
+    scalar: bool = False
+
+    def bench(self, pdf: pd.DataFrame) -> Any:
+        if self.scalar:
+            return [
+                self.processor.__wrapped__(*row)
+                for row in pdf.itertuples(index=False)
+            ]
+        return self.processor.__wrapped__(*[pdf[col] for col in pdf.columns])
 

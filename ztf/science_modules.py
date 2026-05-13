@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Science modules in Fink"""
-from pyspark import SparkContext
-from ztf.utils import FakeSparkFunctions
+import pyspark.sql.functions as F
+from ztf.utils import ScienceModule
 import logging
 
 try:
@@ -37,17 +37,27 @@ except ImportError as e:
 
 _LOG = logging.getLogger(__name__)
 
+MODULE_NAMES = [
+    "CDS xmatch (SIMBAD)",
+    "CDS xmatch (vizier)",
+    "Local xmatch",
+    "Kilonova",
+    "Fast transient",
+    "Feature extraction",
+    "Microlensing",
+    "Asteroid",
+    "SuperNNova",
+    "Early SN Ia",
+    "SSOFT",
+]
+
 
 def load_ztf_modules(module_name="") -> dict:
     """Configuration with all science modules."""
-    if SparkContext._active_spark_context is None:
-        F = FakeSparkFunctions()
-    else:
-        import pyspark.sql.functions as F
     modules = {
-        "CDS xmatch (SIMBAD)": {
-            "processor": cdsxmatch,
-            "cols": [
+        "CDS xmatch (SIMBAD)": ScienceModule(
+            processor=cdsxmatch,
+            cols=[
                 "candidate.candid",
                 "candidate.ra",
                 "candidate.dec",
@@ -55,12 +65,12 @@ def load_ztf_modules(module_name="") -> dict:
                 F.lit("simbad"),
                 F.lit("main_type"),
             ],
-            "type": "xmatch",
-            "colname": "cdsxmatch",
-        },
-        "CDS xmatch (vizier)": {
-            "processor": cdsxmatch,
-            "cols": [
+            kind="xmatch",
+            colname="cdsxmatch",
+        ),
+        "CDS xmatch (vizier)": ScienceModule(
+            processor=cdsxmatch,
+            cols=[
                 "candidate.candid",
                 "candidate.ra",
                 "candidate.dec",
@@ -68,24 +78,24 @@ def load_ztf_modules(module_name="") -> dict:
                 F.lit("vizier:I/355/gaiadr3"),
                 F.lit("DR3Name,Plx,e_Plx"),
             ],
-            "type": "xmatch",
-            "colname": "gaia",
-        },
-        "Local xmatch": {
-            "processor": crossmatch_other_catalog,
-            "cols": [
+            kind="xmatch",
+            colname="gaia",
+        ),
+        "Local xmatch": ScienceModule(
+            processor=crossmatch_other_catalog,
+            cols=[
                 "candidate.candid",
                 "candidate.ra",
                 "candidate.dec",
                 F.lit("gcvs"),
                 F.lit(1.5).alias("radius"),
             ],
-            "type": "xmatch",
-            "colname": "gcvs",
-        },
-        "Kilonova": {
-            "processor": knscore,
-            "cols": [
+            kind="xmatch",
+            colname="gcvs",
+        ),
+        "Kilonova": ScienceModule(
+            processor=knscore,
+            cols=[
                 "cjd",
                 "cfid",
                 "cmagpsf",
@@ -94,13 +104,13 @@ def load_ztf_modules(module_name="") -> dict:
                 F.col("cdsxmatch"),
                 F.col("candidate.ndethist"),
             ],
-            "type": "ml",
-            "colname": "rf_kn_vs_nonkn",
-        },
-        # "Anomaly": {"processor": anomaly_score, "cols": ["lc_features"]},
-        "Fast transient": {
-            "processor": magnitude_rate,
-            "cols": [
+            kind="ml",
+            colname="rf_kn_vs_nonkn",
+        ),
+        # "Anomaly": ScienceModule(processor=anomaly_score, cols=["lc_features"], ...),
+        "Fast transient": ScienceModule(
+            processor=magnitude_rate,
+            cols=[
                 "candidate.magpsf",
                 "candidate.sigmapsf",
                 "candidate.jd",
@@ -114,12 +124,12 @@ def load_ztf_modules(module_name="") -> dict:
                 F.lit(1000).alias("N"),
                 F.lit(None).alias("seed"),
             ],
-            "type": "feature",
-            "colname": "fast_transient",
-        },
-        "Feature extraction": {
-            "processor": extract_features_ad,
-            "cols": [
+            kind="feature",
+            colname="fast_transient",
+        ),
+        "Feature extraction": ScienceModule(
+            processor=extract_features_ad,
+            cols=[
                 "cmagpsf",
                 "cjd",
                 "csigmapsf",
@@ -130,12 +140,13 @@ def load_ztf_modules(module_name="") -> dict:
                 "csigmagnr",
                 "cisdiffpos",
             ],
-            "type": "feature",
-            "colname": "lc_features",
-        },
-        "Microlensing": {
-            "processor": mulens,
-            "cols": [
+            kind="feature",
+            colname="lc_features",
+            scalar=True,
+        ),
+        "Microlensing": ScienceModule(
+            processor=mulens,
+            cols=[
                 "cfid",
                 "cmagpsf",
                 "csigmapsf",
@@ -144,12 +155,12 @@ def load_ztf_modules(module_name="") -> dict:
                 "cisdiffpos",
                 "candidate.ndethist",
             ],
-            "type": "ml",
-            "colname": "mulens",
-        },
-        "Asteroid": {
-            "processor": roid_catcher,
-            "cols": [
+            kind="ml",
+            colname="mulens",
+        ),
+        "Asteroid": ScienceModule(
+            processor=roid_catcher,
+            cols=[
                 "cjd",
                 "cmagpsf",
                 "candidate.ndethist",
@@ -157,12 +168,12 @@ def load_ztf_modules(module_name="") -> dict:
                 "candidate.ssdistnr",
                 "candidate.distpsnr1",
             ],
-            "type": "feature",
-            "colname": "roid",
-        },
-        "SuperNNova": {
-            "processor": snn_ia,
-            "cols": [
+            kind="feature",
+            colname="roid",
+        ),
+        "SuperNNova": ScienceModule(
+            processor=snn_ia,
+            cols=[
                 "candid",
                 "cjd",
                 "cfid",
@@ -173,12 +184,12 @@ def load_ztf_modules(module_name="") -> dict:
                 "candidate.jdstarthist",
                 F.lit("snn_snia_vs_nonia"),
             ],
-            "type": "ml",
-            "colname": "snn_snia_vs_nonia",
-        },
-        "Early SN Ia": {
-            "processor": rfscore_sigmoid_full,
-            "cols": [
+            kind="ml",
+            colname="snn_snia_vs_nonia",
+        ),
+        "Early SN Ia": ScienceModule(
+            processor=rfscore_sigmoid_full,
+            cols=[
                 "cjd",
                 "cfid",
                 "cmagpsf",
@@ -186,12 +197,12 @@ def load_ztf_modules(module_name="") -> dict:
                 "cdsxmatch",
                 F.col("candidate.ndethist"),
             ],
-            "type": "ml",
-            "colname": "rf_snia_vs_nonia",
-        },
-        "SSOFT": {
-            "processor": extract_ssoft_parameters,
-            "cols": [
+            kind="ml",
+            colname="rf_snia_vs_nonia",
+        ),
+        "SSOFT": ScienceModule(
+            processor=extract_ssoft_parameters,
+            cols=[
                 "ssnamenr",
                 "cmagpsf",
                 "csigmapsf",
@@ -207,9 +218,9 @@ def load_ztf_modules(module_name="") -> dict:
                 F.lit("nifty"),
                 F.lit("SOCCA").alias("model"),
             ],
-            "type": "agg",
-            "colname": "ssoft_params",
-        },
+            kind="agg",
+            colname="ssoft_params",
+        ),
     }
 
     if module_name != "":
